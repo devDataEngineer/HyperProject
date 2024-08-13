@@ -1,16 +1,17 @@
 import os
 from dotenv import load_dotenv
 import pg8000.native
+from src.db_secrets import secrets
 
 load_dotenv()
 
 def db_connection():
     return pg8000.native.Connection(
-            user=os.getenv("PG_USER"), 
-            password=os.getenv("PG_PASSWORD"),
-            database=os.getenv("PG_DATABASE"),
-            host=os.getenv("PG_HOST"),
-            port=int(os.getenv("PG_PORT"))
+            user=secrets["username"], 
+            password=secrets["password"],
+            database=secrets["dbname"],
+            host=secrets["host"],
+            port=int(secrets["port"])
         )
     
 conn = db_connection()
