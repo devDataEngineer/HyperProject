@@ -1,0 +1,5 @@
+pytest
+python-dotenv
+pg8000
+moto
+boto3
