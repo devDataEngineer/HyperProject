@@ -1,11 +1,8 @@
 import os
 from dotenv import load_dotenv
-from pg8000.native import Connection
+import pg8000.native
 
 load_dotenv()
-
-def close_db_connection(conn):
-    conn.close()
 
 def db_connection():
     return pg8000.native.Connection(
@@ -20,3 +17,4 @@ conn = db_connection()
 
 def close_db_connection(conn):
     conn.close()
+
