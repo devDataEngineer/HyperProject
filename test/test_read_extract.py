@@ -1,7 +1,6 @@
 from src.read_extract import read_table
 import pytest
 
-
 def test_function_returns_counterparty_table():
     result = read_table("counterparty")
     assert isinstance(result, list)
