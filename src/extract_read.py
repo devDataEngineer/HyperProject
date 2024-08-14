@@ -20,19 +20,3 @@ def read_staff_table(db_table):
     
     finally:
        close_db_connection(conn)
-       #print(conn.close())
-       #staff_table = conn.run(staff_query)      
-
-#print(read_staff_table("staff"))
-
-# counterparty, 
-# currency, 
-# department, 
-# design, 
-# staff, 
-# sales_order, 
-# address, 
-# payment, 
-# purchase_order, 
-# payment_type, 
-# transaction
