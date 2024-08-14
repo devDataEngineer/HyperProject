@@ -2,7 +2,7 @@ import json
 import boto3
 import os
 
-# This is a temporary lambda function to chekc SNS and Cloud watch services
+# This is a temporary lambda function to check SNS and Cloud watch services
 client = boto3.client('sns')
          
 def lambda_handler(event, context):
