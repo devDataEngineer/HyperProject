@@ -7,7 +7,7 @@ resource "aws_s3_bucket" "ingestion-bucket" {
     
   }
 }
-# not relevant for the ingestion part
+
 resource "aws_s3_bucket" "processed-bucket" {
   bucket = "${var.bucket_prefix}-processed"
 
@@ -16,17 +16,26 @@ resource "aws_s3_bucket" "processed-bucket" {
     
   }
 }
-# incomplete
+
+resource "aws_s3_bucket" "lambda-code-bucket" {
+  bucket = "${var.bucket_prefix}-lambda-code"
+
+    tags = {
+        Name  = "lambda code bucket to upload python files to be used as lambda functions"
+    
+  }
+}
+
 resource "aws_s3_bucket_notification" "ingestion-bucket-notification" {
   bucket = "aws_s3_bucket.${var.bucket_prefix}-ingestion".id
   eventbridge = true
 
-#   lambda_function {
+  lambda_function {
       
-#     lambda_function_arn = aws_lambda_function.s3_file_reader.arn (destination) STARTS TRANSFORM LAMBA
-#     events              = ["s3:ObjectCreated:*"]
-#   }
+    lambda_function_arn = aws_lambda_function.extract_lambda.arn
+    events              = ["s3:ObjectCreated:*"]
+  }
 
-#   depends_on = [aws_lambda_permission.allow_s3]
+  depends_on = [aws_lambda_permission.allow_s3]
  }  
 
