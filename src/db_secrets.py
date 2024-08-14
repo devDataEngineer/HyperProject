@@ -3,7 +3,7 @@ from botocore.exceptions import ClientError
 import json
 
 
-def get_secret(name_secret="Secret_Tote_Db"):
+def get_secret(name_secret="Tote_Db_Credentials"):
     secret_name = name_secret
     region_name = "eu-west-2"
     session = boto3.session.Session()

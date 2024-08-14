@@ -1,5 +1,4 @@
 from src.connection import close_db_connection, db_connection
-#import src.connection
 from pg8000 import DatabaseError
 
 def read_staff_table(db_table):
