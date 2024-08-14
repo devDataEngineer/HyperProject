@@ -1,7 +1,7 @@
 from src.connection import close_db_connection, db_connection
 from pg8000 import DatabaseError
 
-def read_staff_table(db_table):
+def read_table(db_table):
 
     table_whitelist = ['counterparty', 'currency', 'department', 'design', 'staff', 
                        'sales_order', 'address', 'payment', 'purchase_order', 'payment_type', 'transaction']
