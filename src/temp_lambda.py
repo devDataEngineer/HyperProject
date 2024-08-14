@@ -12,7 +12,7 @@ def lambda_handler(event, context):
       one = "One"
       two = 2
       totale = sum(one, two)
-      return totale
+      return total
    except TypeError:
       
       client.publish(TopicArn=topic_arn,Message="type error ")
