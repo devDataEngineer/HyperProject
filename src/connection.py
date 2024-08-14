@@ -11,7 +11,6 @@ def db_connection():
             port=int(secrets["port"])
         )
     
-#conn = db_connection()
 
 def close_db_connection(conn):
     conn.close()
