@@ -11,7 +11,7 @@ data "aws_iam_policy_document" "extract_lambda_trust_policy" {
 
     actions = ["sts:AssumeRole"]
   }
-  statement {  # this statment allow lambad to access scheduler 
+  statement {  # this statment allow lambda to access scheduler 
     effect = "Allow"
 
     principals {
