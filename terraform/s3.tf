@@ -22,7 +22,7 @@ resource "aws_s3_bucket_notification" "ingestion-bucket-notification" {
   eventbridge = true
 
 #   lambda_function {
-      name =
+      
 #     lambda_function_arn = aws_lambda_function.s3_file_reader.arn (destination) STARTS TRANSFORM LAMBA
 #     events              = ["s3:ObjectCreated:*"]
 #   }
