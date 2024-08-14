@@ -11,7 +11,18 @@ data "aws_iam_policy_document" "extract_lambda_trust_policy" {
 
     actions = ["sts:AssumeRole"]
   }
+  statement {  # this statment allow lambad to access scheduler 
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["scheduler.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
 }
+
 
 resource "aws_iam_role" "extract_lambda_role" {
   name_prefix        = "role-${var.lambda_name}"
