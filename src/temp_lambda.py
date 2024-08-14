@@ -11,7 +11,7 @@ def lambda_handler(event, context):
       topic_arn = os.environ.get('TOPIC_ARN')
       one = "One"
       two = 2
-      totale = sum(one, two)
+      total = sum(one, two)
       return total
    except TypeError:
       
