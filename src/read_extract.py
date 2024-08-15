@@ -20,3 +20,4 @@ def read_table(db_table):
     
     finally:
        close_db_connection(conn)
+
