@@ -6,7 +6,7 @@ variable "bucket_prefix" {
 
 variable "lambda_name" {
   type    = string
-  default = "team-hyper-accelerated-dragon-lambda"
+  default = "hyper-accelerated-dragon-lambda"
 }
 
 variable "python_runtime" {
