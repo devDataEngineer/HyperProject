@@ -44,7 +44,7 @@ data "aws_iam_policy_document" "s3_data_policy_doc" {
 
 resource "aws_iam_policy" "s3_write_policy" {
   name_prefix = "s3-policy-extract-lambda-write"
-  policy      = data.aws_iam_policy_document.json
+  policy      = data.aws_iam_policy_document.s3_data_policy_doc.json
 }
 
 
