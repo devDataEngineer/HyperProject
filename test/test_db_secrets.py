@@ -31,4 +31,3 @@ def test_doesnt_reach_client_error_when_provided_correct_Secret_name(aws_client)
 def test_reaches_client_error_when_provided_invalid_Secret_name(aws_client):
     with pytest.raises(ClientError):
         get_secret("nonsense")
-

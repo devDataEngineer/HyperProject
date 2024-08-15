@@ -11,7 +11,18 @@ data "aws_iam_policy_document" "extract_lambda_trust_policy" {
 
     actions = ["sts:AssumeRole"]
   }
+  statement {  # this statment allow lambda to access scheduler 
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["scheduler.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
 }
+
 
 resource "aws_iam_role" "extract_lambda_role" {
   name_prefix        = "role-${var.lambda_name}"
@@ -33,7 +44,7 @@ data "aws_iam_policy_document" "s3_data_policy_doc" {
 
 resource "aws_iam_policy" "s3_write_policy" {
   name_prefix = "s3-policy-extract-lambda-write"
-  policy      = data.aws_iam_policy_document.json
+  policy      = data.aws_iam_policy_document.s3_data_policy_doc.json
 }
 
 
