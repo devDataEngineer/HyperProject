@@ -9,7 +9,7 @@ data "archive_file" "layer" {
 resource "aws_lambda_layer_version" "layer_to_be_added" {
   layer_name          = ""
   compatible_runtimes = [var.python_runtime]
-  s3_bucket           = aws_s3_bucket.code_bucket.bucket # CHANGE
+  s3_bucket           = aws_s3_bucket.lambda-code-bucket
   s3_key              = "${var.lambda_name}/layer.zip" # CHANGE
 }
 

@@ -27,7 +27,7 @@ resource "aws_s3_bucket" "lambda-code-bucket" {
 }
 
 resource "aws_s3_bucket_notification" "ingestion-bucket-notification" {
-  bucket = "aws_s3_bucket.${var.bucket_prefix}-ingestion".id
+  bucket = aws_s3_bucket.ingestion-bucket.id
   eventbridge = true
 
   lambda_function {
