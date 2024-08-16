@@ -2,6 +2,8 @@ from src.connection import close_db_connection, db_connection
 from utilities.utilities import format_extract_lambda_as_rows
 from pg8000 import DatabaseError
 from datetime import datetime
+
+import os
 import boto3
 import json
 
@@ -56,4 +58,13 @@ def load_all_tables():
                        'purchase_order', 'payment_type', 'transaction']
     for table in table_list:
         load_table(table, read_table(table))
+
+def lambda_handler(event, context):
+   try:
+      load_all_tables()
+    
+   except:
+      topic_arn = os.environ.get('TOPIC_ARN')
+      client = boto3.client('sns')  
+      client.publish(TopicArn=topic_arn,Message="Error has occured")
 
