@@ -1,6 +1,6 @@
 # create an email address for sending notification to
 locals {
-  emails = ["zabihullah4830@gmail.com"]
+  emails = [""]
 }
 
 #  create aws sns topic
