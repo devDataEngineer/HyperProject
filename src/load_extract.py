@@ -41,28 +41,7 @@ def load_table(db_table):
         #         updated_json_data = json_bytes  # implement logic to generate updated JSON
         #         # Upload updated JSON to S3
         #         # s3.put_object(Body=json.dumps(updated_json_data), Bucket='bucket_name', Key='file_name.json')
-        #         s3.put_object(Body=updated_json_data, Bucket=BUCKET_NAME, Key=f'{db_table}/{timestamp}.json')
-
-    
-    
-        
-
-    
-
-    
-        
-
-
-
+        #         s3.put_object(Body=updated_json_data, Bucket=BUCKET_NAME, Key=f'{db_table}/{timestamp}.json'
 
     # # Upload the JSON file to S3
     # s3.put_object(Body=json_bytes, Bucket='team-hyper-accelerated-dragon-bucket-ingestion', Key=f'{db_table}/{timestamp}.json')
-
-
-    
-  
-
-
-
-
-load_table("counterparty")
