@@ -1,9 +1,9 @@
-#  create aws cloude watch event rule to call every 5 min
+# #  create aws cloude watch event rule to call every 5 min
 resource "aws_cloudwatch_event_rule" "every_5_minutes" {
   name        = "every_5_minutes_rule"
   description = "trigger lambda every 5 minute"
 
-  schedule_expression = "rate(1 minute)"
+  schedule_expression = "rate(5 minutes)"
   
 }
 

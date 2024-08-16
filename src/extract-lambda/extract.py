@@ -1,16 +1,21 @@
-from src.connection import close_db_connection, db_connection
-from utilities.utilities import format_extract_lambda_as_rows
+from connection import close_db_connection, db_connection
+from utilities import format_extract_lambda_as_rows
 from pg8000 import DatabaseError
 from datetime import datetime
+import logging
 
 import os
 import boto3
 import json
 
+logger = logging.getLogger()
+logger.setLevel("INFO")
+
 date_to_compare = datetime(1990, 8, 15, 13, 21, 10, 320000)
 
 def load_table(table_name, table_data):
     global date_to_compare
+    logger.info(f"packing table {table_name} into {table_name}/{timestamp}.json")
     try:
         s3 = boto3.client('s3')
         BUCKET_NAME = 'team-hyper-accelerated-dragon-bucket-ingestion'
@@ -25,6 +30,7 @@ def load_table(table_name, table_data):
     
 def read_table(db_table):
     global date_to_compare
+    logger.info(f"reading table {db_table}")
     table_whitelist = ['counterparty', 'currency', 'department', 'design', 
                        'staff', 'sales_order', 'address', 'payment', 
                        'purchase_order', 'payment_type', 'transaction']
@@ -45,6 +51,7 @@ def read_table(db_table):
         return formatted
     
     except DatabaseError as e:
+        logger.info(f"got an error when reading table {db_table}")
         raise e
     
     finally:
@@ -53,6 +60,7 @@ def read_table(db_table):
 
 
 def load_all_tables():
+    logger.info("loading all tables...")
     table_list = ['counterparty', 'currency', 'department', 'design', 
                        'staff', 'sales_order', 'address', 'payment', 
                        'purchase_order', 'payment_type', 'transaction']
@@ -60,6 +68,11 @@ def load_all_tables():
         load_table(table, read_table(table))
 
 def lambda_handler(event, context):
+   global date_to_compare
+   
+   logger.info(f"running extract lambda_handler at {datetime.now()}")
+   logger.info(f"date_to_compare is {date_to_compare}")
+
    try:
       load_all_tables()
     
