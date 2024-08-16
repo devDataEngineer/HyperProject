@@ -1,5 +1,5 @@
 import pg8000.native
-from src.db_secrets import get_secret
+from db_secrets import get_secret
 
 def db_connection():
     secrets = get_secret()
