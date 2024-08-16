@@ -7,7 +7,7 @@ resource "aws_cloudwatch_event_rule" "every_5_minutes" {
   
 }
 
-#  adding extract lambda to the Cloudewatch event 
+#  adding extract lambda to the Cloudwatch event 
 resource "aws_cloudwatch_event_target" "lambda_target" {
   rule      = aws_cloudwatch_event_rule.every_5_minutes.name
   target_id = "SendToLambda"
