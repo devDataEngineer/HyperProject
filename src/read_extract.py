@@ -1,10 +1,28 @@
 from src.connection import close_db_connection, db_connection
 from utilities.utilities import format_extract_lambda_as_rows
 from pg8000 import DatabaseError
+from datetime import datetime
+import boto3
+import json
 
+date_to_compare = datetime(1990, 8, 15, 13, 21, 10, 320000)
 
+def load_table(table_name, table_data):
+    global date_to_compare
+    try:
+        s3 = boto3.client('s3')
+        BUCKET_NAME = 'team-hyper-accelerated-dragon-bucket-ingestion'
+        timestamp = date_to_compare.strftime('%Y/%m/%d/%H-%M-%S')
+        data_with_json_format = json.dumps(table_data, indent=4, sort_keys=True, default=str)
+        json_bytes = json.dumps(data_with_json_format).encode('UTF-8')
+
+        s3.put_object(Body=json_bytes, Bucket=BUCKET_NAME, Key=f'{table_name}/{timestamp}.json')
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False
+    
 def read_table(db_table):
-
+    global date_to_compare
     table_whitelist = ['counterparty', 'currency', 'department', 'design', 
                        'staff', 'sales_order', 'address', 'payment', 
                        'purchase_order', 'payment_type', 'transaction']
@@ -14,14 +32,28 @@ def read_table(db_table):
     
     try:
         conn = db_connection()
-        query = f"SELECT * FROM {db_table};"
-        rows = conn.run(query)
+        current_date_time=datetime.now()
+        query = f"""SELECT * FROM {db_table}
+                    WHERE last_updated BETWEEN :date_to_compare AND :current_date_time;"""
+        print("datetime.now=",datetime.now())
+        rows = conn.run(query, date_to_compare=date_to_compare, current_date_time=current_date_time)
         column_list = [conn.columns[i]['name'] for i in range(len(conn.columns))]
         formatted = format_extract_lambda_as_rows(rows,column_list)
+        date_to_compare = datetime.now()
         return formatted
     
     except DatabaseError as e:
         raise e
     
     finally:
-       close_db_connection(conn)
+        close_db_connection(conn)
+        print(date_to_compare)
+
+
+def load_all_tables():
+    table_list = ['counterparty', 'currency', 'department', 'design', 
+                       'staff', 'sales_order', 'address', 'payment', 
+                       'purchase_order', 'payment_type', 'transaction']
+    for table in table_list:
+        load_table(table, read_table(table))
+
