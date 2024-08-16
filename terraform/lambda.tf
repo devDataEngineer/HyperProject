@@ -85,3 +85,12 @@ resource "aws_lambda_permission" "allow_bucket" {
   principal     = "s3.amazonaws.com"
   source_arn    = aws_s3_bucket.ingestion-bucket.arn
 }
+
+
+# bellow this is code is all for transform lambda
+# just created for testing of SNS
+data "archive_file" "transform_layer" {
+  type        = "zip"
+  source_file = "${path.module}/../src/temp_transform_lambda.py"
+  output_path = "${path.module}/../src/lambda_function_payload.zip"
+}
