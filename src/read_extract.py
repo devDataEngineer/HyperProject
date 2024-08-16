@@ -9,8 +9,7 @@ import json
 
 date_to_compare = datetime(1990, 8, 15, 13, 21, 10, 320000)
 
-def load_table(table_name, table_data):
-    global date_to_compare
+def load_table(table_name, table_data, date_to_compare):
     try:
         s3 = boto3.client('s3')
         BUCKET_NAME = 'team-hyper-accelerated-dragon-bucket-ingestion'
