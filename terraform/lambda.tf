@@ -1,34 +1,36 @@
 #  making .zip file of lambda python code and store in terraform file
 data "archive_file" "extract_layer" {
   type        = "zip"
-  source_file = "../src/temp_lambda.py"
+  source_file = "${path.module}/../src/temp_lambda.py"
   output_path = "${path.module}/../src/lambda_function_payload.zip"
 }
 
-resource "aws_lambda_layer_version" "extract_layer_to_be_added" {
-  filename = "${path.module}/../src/lambda_function_payload.zip"
-  layer_name          = "extract_lambda_dependencies"
-  compatible_runtimes = [var.python_runtime]
-  # s3_bucket           = aws_s3_bucket.lambda-code-bucket.bucket - would be created in Terraform
-  # s3_key              = "${var.lambda_name}/lambda_function_payload.zip" - how would this be moved?
-}
+# resource "aws_lambda_layer_version" "extract_layer_to_be_added" {
+#   filename = "${path.module}/../src/lambda_function_payload.zip"
+#   layer_name          = "extract_lambda_dependencies"
+#   compatible_runtimes = [var.python_runtime]
+#   # s3_bucket           = aws_s3_bucket.lambda-code-bucket # would be created in Terraform
+#   # s3_key              = "${var.lambda_name}/lambda_function_payload.zip" # how would this be moved?
+# }
 
 resource "aws_lambda_function" "extract_lambda" {
-  filename = "${path.module}/../src/lambda_function_payload.zip"
+  filename      = "${path.module}/../src/lambda_function_payload.zip"
   function_name = "${var.lambda_name}-extract"
-  role = aws_iam_role.extract_lambda_role.arn
-  handler = "${var.lambda_name}-extract.lambda_handler"
+  role          = aws_iam_role.extract_lambda_role.arn
+  # handler       = "${var.lambda_name}-extract.lambda_handler"
+  handler = "temp_lambda.lambda_handler"
   runtime       = var.python_runtime
-  depends_on = [aws_sns_topic.email_notification ] # add environment below!
+  source_code_hash = data.archive_file.extract_layer.output_base64sha256
+  depends_on    = [aws_sns_topic.email_notification] # add environment below!
   environment {
     variables = {
-        TOPIC_ARN = aws_sns_topic.email_notification.arn # get sns topic arn and assing to env variable TOPIC_ARN
+      TOPIC_ARN = aws_sns_topic.email_notification.arn # get sns topic arn and assing to env variable TOPIC_ARN
     }
   }
-    }
+}
 
 
-    #  add permission to extract lambda function to call sns
+#  add permission to extract lambda function to call sns
 resource "aws_lambda_permission" "sns_publish" {
     function_name = aws_lambda_function.extract_lambda.function_name
     statement_id  = "AllowSNSPublish"
@@ -76,11 +78,57 @@ resource "aws_lambda_permission" "allow_eventbridge" {
 
 
 #  add permission to transform lambda function to be started by s3 bucket notification
-# resource "aws_lambda_permission" "allow_bucket" {
-#   statement_id  = "AllowExecutionFromS3Bucket"
+resource "aws_lambda_permission" "allow_bucket" {
+  statement_id  = "AllowExecutionFromS3Bucket"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.extract_lambda.function_name
+  principal     = "s3.amazonaws.com"
+  source_arn    = aws_s3_bucket.ingestion-bucket.arn
+}
+
+
+
+
+# ------------------TRANSFORM LAMBDA SNS and CW --------------------------------------------------------
+
+# creat a zip file of transform lambda funciton of python formate
+data "archive_file" "transform_layer" {
+  type        = "zip"
+  source_file = "${path.module}/../src/temp_transform_lambda.py"
+  output_path = "${path.module}/../src/transform_lambda_function_payload.zip"
+}
+
+# transform lambda function 
+resource "aws_lambda_function" "transform_lambda" {
+  filename      = "${path.module}/../src/transform_lambda_function_payload.zip"
+  function_name = "${var.lambda_name}-transform"
+  role          = aws_iam_role.extract_lambda_role.arn
+  # handler       = "${var.lambda_name}-extract.lambda_handler"
+  handler = "temp_transform_lambda.lambda_handler"
+  runtime       = var.python_runtime
+  source_code_hash = data.archive_file.extract_layer.output_base64sha256
+  depends_on    = [aws_sns_topic.email_notification] # add environment below!
+  environment {
+    variables = {
+      TOPIC_ARN = aws_sns_topic.email_notification.arn # get sns topic arn and assing to env variable TOPIC_ARN
+    }
+  }
+}
+
+#  add permission to extract lambda function to be called by aws cloud watch event rule
+# resource "aws_lambda_permission" "transform_allow_eventbridge" {
+#   statement_id  = "AllowExecutionFromEventBridge"
 #   action        = "lambda:InvokeFunction"
-#   function_name = aws_lambda_function.transform_lambda.arn
-#   principal     = "s3.amazonaws.com"
-#   source_arn    = aws_s3_bucket.bucket.arn
+#   function_name = aws_lambda_function.transform_lambda.function_name
+#   principal     = "events.amazonaws.com"
+#   source_arn    = aws_cloudwatch_event_rule.every_5_minutes.arn
 # }
 
+#  add permission to transform lambda function to call sns
+resource "aws_lambda_permission" "transform_sns_publish" {
+    function_name = aws_lambda_function.transform_lambda.function_name
+    statement_id  = "AllowSNSPublish"
+    action        = "lambda:PublishMessage"
+    principal     = "sns.amazonaws.com"
+    source_arn    = aws_sns_topic.email_notification.arn
+}

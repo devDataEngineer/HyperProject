@@ -36,6 +36,6 @@ resource "aws_s3_bucket_notification" "ingestion-bucket-notification" {
     events              = ["s3:ObjectCreated:*"]
   }
 
-  depends_on = [aws_lambda_permission.allow_eventbridge]
+  depends_on = [aws_lambda_permission.allow_bucket]
  }  
 
