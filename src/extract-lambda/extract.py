@@ -1,5 +1,6 @@
 from connection import close_db_connection, db_connection
 from utilities import format_extract_lambda_as_rows
+from time_param_funcs import upload_time_to_param, get_date_from_param
 from pg8000 import DatabaseError
 from datetime import datetime
 import logging
@@ -11,10 +12,9 @@ import json
 logger = logging.getLogger()
 logger.setLevel("INFO")
 
-date_to_compare = datetime(1990, 8, 15, 13, 21, 10, 320000)
+date_to_compare = get_date_from_param()
 
 def load_table(table_name, table_data):
-    global date_to_compare
     logger.info(f"packing table {table_name} into {table_name}/{timestamp}.json")
     try:
         s3 = boto3.client('s3')
@@ -43,11 +43,11 @@ def read_table(db_table):
         current_date_time=datetime.now()
         query = f"""SELECT * FROM {db_table}
                     WHERE last_updated BETWEEN :date_to_compare AND :current_date_time;"""
-        print("datetime.now=",datetime.now())
+        
         rows = conn.run(query, date_to_compare=date_to_compare, current_date_time=current_date_time)
         column_list = [conn.columns[i]['name'] for i in range(len(conn.columns))]
         formatted = format_extract_lambda_as_rows(rows,column_list)
-        date_to_compare = datetime.now()
+        upload_time_to_param(current_date_time)
         return formatted
     
     except DatabaseError as e:
@@ -56,7 +56,6 @@ def read_table(db_table):
     
     finally:
         close_db_connection(conn)
-        print(date_to_compare)
 
 
 def load_all_tables():
@@ -67,9 +66,7 @@ def load_all_tables():
     for table in table_list:
         load_table(table, read_table(table))
 
-def lambda_handler(event, context):
-   global date_to_compare
-   
+def lambda_handler(event, context):   
    logger.info(f"running extract lambda_handler at {datetime.now()}")
    logger.info(f"date_to_compare is {date_to_compare}")
 
