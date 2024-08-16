@@ -89,7 +89,7 @@ resource "aws_lambda_permission" "allow_bucket" {
 
 
 
-# ------------------THIS BELLOW CODEA RE FOR TRANSFOMR LAMBAD  SNS and CW --------------------------------------------------------
+# ------------------TRANSFORM LAMBDA SNS and CW --------------------------------------------------------
 
 # creat a zip file of transform lambda funciton of python formate
 data "archive_file" "transform_layer" {
