@@ -1,6 +1,6 @@
 # create an email address for sending notification to
 locals {
-  emails = [""]
+  emails = ["zabihullah4830@gmail.com"]
 }
 
 #  create aws sns topic
@@ -70,3 +70,4 @@ data "aws_iam_policy_document" "sns_topic_policy" {
         sid = "__default_statement_ID"
     }
 }
+

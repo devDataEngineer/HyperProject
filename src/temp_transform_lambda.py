@@ -7,7 +7,7 @@ client = boto3.client('sns')
          
 def lambda_handler(event, context):
    try:  
-      
+      messege = "this is from second transform lambad messege"
       topic_arn = os.environ.get('TOPIC_ARN')
       one = "One"
       two = 2
@@ -15,4 +15,4 @@ def lambda_handler(event, context):
       return total
    except TypeError:
       
-      client.publish(TopicArn=topic_arn,Message="type error ")
+      client.publish(TopicArn=topic_arn,Message=messege)

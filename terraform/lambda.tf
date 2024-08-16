@@ -87,10 +87,48 @@ resource "aws_lambda_permission" "allow_bucket" {
 }
 
 
-# bellow this is code is all for transform lambda
-# just created for testing of SNS
+
+
+# ------------------THIS BELLOW CODEA RE FOR TRANSFOMR LAMBAD  SNS and CW --------------------------------------------------------
+
+# creat a zip file of transform lambda funciton of python formate
 data "archive_file" "transform_layer" {
   type        = "zip"
   source_file = "${path.module}/../src/temp_transform_lambda.py"
-  output_path = "${path.module}/../src/lambda_function_payload.zip"
+  output_path = "${path.module}/../src/transform_lambda_function_payload.zip"
+}
+
+# transform lambda function 
+resource "aws_lambda_function" "transform_lambda" {
+  filename      = "${path.module}/../src/transform_lambda_function_payload.zip"
+  function_name = "${var.lambda_name}-transform"
+  role          = aws_iam_role.extract_lambda_role.arn
+  # handler       = "${var.lambda_name}-extract.lambda_handler"
+  handler = "temp_transform_lambda.lambda_handler"
+  runtime       = var.python_runtime
+  source_code_hash = data.archive_file.extract_layer.output_base64sha256
+  depends_on    = [aws_sns_topic.email_notification] # add environment below!
+  environment {
+    variables = {
+      TOPIC_ARN = aws_sns_topic.email_notification.arn # get sns topic arn and assing to env variable TOPIC_ARN
+    }
+  }
+}
+
+#  add permission to extract lambda function to be called by aws cloud watch event rule
+# resource "aws_lambda_permission" "transform_allow_eventbridge" {
+#   statement_id  = "AllowExecutionFromEventBridge"
+#   action        = "lambda:InvokeFunction"
+#   function_name = aws_lambda_function.transform_lambda.function_name
+#   principal     = "events.amazonaws.com"
+#   source_arn    = aws_cloudwatch_event_rule.every_5_minutes.arn
+# }
+
+#  add permission to transform lambda function to call sns
+resource "aws_lambda_permission" "transform_sns_publish" {
+    function_name = aws_lambda_function.transform_lambda.function_name
+    statement_id  = "AllowSNSPublish"
+    action        = "lambda:PublishMessage"
+    principal     = "sns.amazonaws.com"
+    source_arn    = aws_sns_topic.email_notification.arn
 }
