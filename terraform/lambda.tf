@@ -1,7 +1,7 @@
 #  making .zip file of lambda python code and store in terraform file
 data "archive_file" "extract_layer" {
   type        = "zip"
-  source_dir = "${path.module}/../src/extract-lambda"
+  source_dir = "${path.module}/../src/extractlambda"
   output_path = "${path.module}/../src/lambda_function_payload.zip"
 }
 
@@ -28,7 +28,9 @@ resource "aws_lambda_function" "extract_lambda" {
   depends_on        = [aws_sns_topic.email_notification] # add environment below!
   environment {
     variables = {
-      TOPIC_ARN = aws_sns_topic.email_notification.arn # get sns topic arn and assing to env variable TOPIC_ARN
+      TOPIC_ARN = aws_sns_topic.email_notification.arn,
+       # get sns topic arn and assing to env variable TOPIC_ARN
+      SSMParameterName = var.ssm_parameter_name # sets SSM parameter name 
     }
   }
   layers = [
@@ -42,6 +44,14 @@ resource "aws_lambda_function" "extract_lambda" {
 resource "aws_lambda_permission" "sns_publish" {
     function_name = aws_lambda_function.extract_lambda.function_name
     statement_id  = "AllowSNSPublish"
+    action        = "lambda:PublishMessage"
+    principal     = "sns.amazonaws.com"
+    source_arn    = aws_sns_topic.email_notification.arn
+}
+
+resource "aws_lambda_permission" "ssm_GetParameter" {
+    function_name = aws_lambda_function.extract_lambda.function_name
+    statement_id  = "A"
     action        = "lambda:PublishMessage"
     principal     = "sns.amazonaws.com"
     source_arn    = aws_sns_topic.email_notification.arn

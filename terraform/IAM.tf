@@ -1,7 +1,7 @@
 
 # Lambda IAM Role
 data "aws_iam_policy_document" "extract_lambda_trust_policy" {
-  statement {
+statement {
     effect = "Allow"
 
     principals {
@@ -54,7 +54,6 @@ resource "aws_iam_role_policy_attachment" "lambda_s3_write_policy_attachment" {
     policy_arn = aws_iam_policy.s3_write_policy.arn
 }
 
-
 # extract Lambda IAM Policy for CloudWatch incomplete
 data "aws_iam_policy_document" "cw_document" {
   statement {
@@ -75,8 +74,28 @@ resource "aws_iam_role_policy_attachment" "lambda_cw_policy_attachment" {
   role       = aws_iam_role.extract_lambda_role.name
   policy_arn = aws_iam_policy.cw_policy.arn
 
+}
+
+data "aws_iam_policy_document" "ssm_document" {
+  statement {
+    actions = [
+      "ssm:GetParameter",
+      "ssm:PutParameter"
+    ]
+    resources = [aws_ssm_parameter.ssm_parmeter.arn]
+  }
+}
+resource "aws_iam_policy" "ssm_policy" {
+  name_prefix = "sm-policy-extract-lambda"
+  policy      = data.aws_iam_policy_document.ssm_document.json
+}
+resource "aws_iam_role_policy_attachment" "lambda_ssm_policy_attachment" {
+  role       = aws_iam_role.extract_lambda_role.name
+  policy_arn = aws_iam_policy.ssm_policy.arn
 
 }
+
+
 
 
 

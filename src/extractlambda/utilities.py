@@ -1,5 +1,3 @@
-# from src.read_extract import db_table
-
 def format_extract_lambda_as_rows(rows_list, columns_list):
     """ Formatting output in list of dictionaries with seperate
         dictionaries representing rows of <column:value> pairs:
