@@ -20,5 +20,4 @@ def get_date_from_param():
     
     timestamp_float = float(response['Parameter']['Value'])
     previous_date_time = datetime.fromtimestamp(timestamp_float)
-    print(previous_date_time)
     return previous_date_time
