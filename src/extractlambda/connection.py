@@ -1,5 +1,8 @@
 import pg8000.native
-from db_secrets import get_secret
+try:
+    from db_secrets import get_secret
+except:
+    from src.extractlambda.db_secrets import get_secret
 
 def db_connection():
     secrets = get_secret()
