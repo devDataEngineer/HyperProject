@@ -48,7 +48,7 @@ def read_table(db_table):
         column_list = [conn.columns[i]['name'] for i in range(len(conn.columns))]
         formatted = format_extract_lambda_as_rows(rows,column_list)
         upload_time_to_param(current_date_time)
-        return formatted
+        return formatted, current_date_time
     
     except DatabaseError as e:
         logger.info(f"got an error when reading table {db_table}")
@@ -64,7 +64,7 @@ def load_all_tables():
                        'staff', 'sales_order', 'address', 'payment', 
                        'purchase_order', 'payment_type', 'transaction']
     for table in table_list:
-        load_table(table, read_table(table))
+        load_table(table, read_table(table)[0])
 
 def lambda_handler(event, context):   
    logger.info(f"running extract lambda_handler at {datetime.now()}")
@@ -77,4 +77,6 @@ def lambda_handler(event, context):
       topic_arn = os.environ.get('TOPIC_ARN')
       client = boto3.client('sns')  
       client.publish(TopicArn=topic_arn,Message="Error has occured")
+
+
 

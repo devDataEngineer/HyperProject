@@ -1,4 +1,4 @@
-from utilities.utilities import format_extract_lambda_as_rows
+from src.extractlambda.utilities import format_extract_lambda_as_rows
 
 
 

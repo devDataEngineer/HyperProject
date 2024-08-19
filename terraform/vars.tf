@@ -13,3 +13,8 @@ variable "python_runtime" {
   type    = string
   default = "python3.12"
 }
+
+variable "ssm_parameter_name" {
+  type = string
+  default = "dragons_time_param"
+}

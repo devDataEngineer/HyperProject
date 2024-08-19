@@ -1,4 +1,4 @@
-from src.db_secrets import get_secret
+from src.extractlambda.db_secrets import get_secret
 from botocore.exceptions import ClientError
 from moto import mock_aws
 import boto3
