@@ -39,6 +39,9 @@ resource "aws_lambda_function" "extract_lambda" {
   timeout = 30
 }
 
+resource "aws_cloudwatch_log_group" "extract_lambda_cw_group"{
+  name = "/aws/lambda/${var.lambda_name}-extract"
+}
 
 #  add permission to extract lambda function to call sns
 resource "aws_lambda_permission" "sns_publish" {
