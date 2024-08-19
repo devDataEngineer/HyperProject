@@ -1,15 +1,21 @@
-from src.connection import close_db_connection, db_connection
-from utilities.utilities import format_extract_lambda_as_rows
+from connection import close_db_connection, db_connection
+from utilities import format_extract_lambda_as_rows
+from time_param_funcs import upload_time_to_param, get_date_from_param
 from pg8000 import DatabaseError
 from datetime import datetime
+import logging
 
 import os
 import boto3
 import json
 
-date_to_compare = datetime(1990, 8, 15, 13, 21, 10, 320000)
+logger = logging.getLogger()
+logger.setLevel("INFO")
 
-def load_table(table_name, table_data, date_to_compare):
+date_to_compare = get_date_from_param()
+
+def load_table(table_name, table_data):
+    logger.info(f"packing table {table_name} into {table_name}/{timestamp}.json")
     try:
         s3 = boto3.client('s3')
         BUCKET_NAME = 'team-hyper-accelerated-dragon-bucket-ingestion'
@@ -24,6 +30,7 @@ def load_table(table_name, table_data, date_to_compare):
     
 def read_table(db_table):
     global date_to_compare
+    logger.info(f"reading table {db_table}")
     table_whitelist = ['counterparty', 'currency', 'department', 'design', 
                        'staff', 'sales_order', 'address', 'payment', 
                        'purchase_order', 'payment_type', 'transaction']
@@ -36,29 +43,33 @@ def read_table(db_table):
         current_date_time=datetime.now()
         query = f"""SELECT * FROM {db_table}
                     WHERE last_updated BETWEEN :date_to_compare AND :current_date_time;"""
-        print("datetime.now=",datetime.now())
+        
         rows = conn.run(query, date_to_compare=date_to_compare, current_date_time=current_date_time)
         column_list = [conn.columns[i]['name'] for i in range(len(conn.columns))]
         formatted = format_extract_lambda_as_rows(rows,column_list)
-        date_to_compare = datetime.now()
+        upload_time_to_param(current_date_time)
         return formatted
     
     except DatabaseError as e:
+        logger.info(f"got an error when reading table {db_table}")
         raise e
     
     finally:
         close_db_connection(conn)
-        print(date_to_compare)
 
 
 def load_all_tables():
+    logger.info("loading all tables...")
     table_list = ['counterparty', 'currency', 'department', 'design', 
                        'staff', 'sales_order', 'address', 'payment', 
                        'purchase_order', 'payment_type', 'transaction']
     for table in table_list:
         load_table(table, read_table(table))
 
-def lambda_handler(event, context):
+def lambda_handler(event, context):   
+   logger.info(f"running extract lambda_handler at {datetime.now()}")
+   logger.info(f"date_to_compare is {date_to_compare}")
+
    try:
       load_all_tables()
     
