@@ -7,6 +7,7 @@ except:
     from src.extractlambda.utilities import format_extract_lambda_as_rows
     from src.extractlambda.time_param_funcs import upload_time_to_param, get_date_from_param
 from pg8000 import DatabaseError
+
 from datetime import datetime
 import logging
 
