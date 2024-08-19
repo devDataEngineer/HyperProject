@@ -1,7 +1,14 @@
-from connection import close_db_connection, db_connection
-from utilities import format_extract_lambda_as_rows
-from time_param_funcs import upload_time_to_param, get_date_from_param
+try:
+    from connection import close_db_connection, db_connection
+    from utilities import format_extract_lambda_as_rows
+    from time_param_funcs import upload_time_to_param, get_date_from_param
+except:
+    from src.extractlambda.connection import close_db_connection, db_connection
+    from src.extractlambda.utilities import format_extract_lambda_as_rows
+    from src.extractlambda.time_param_funcs import upload_time_to_param, get_date_from_param
+
 from pg8000 import DatabaseError
+
 from datetime import datetime
 import logging
 
@@ -14,7 +21,7 @@ logger.setLevel("INFO")
 
 date_to_compare = get_date_from_param()
 
-def load_table(table_name, table_data):
+def load_table(table_name, table_data, date_to_compare):
     logger.info(f"packing table {table_name} into {table_name}/{timestamp}.json")
     try:
         s3 = boto3.client('s3')

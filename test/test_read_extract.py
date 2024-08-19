@@ -1,4 +1,4 @@
-from src.read_extract import read_table, load_table
+from src.extractlambda.extract import load_table
 import pytest
 import os
 from moto import mock_aws
@@ -127,7 +127,7 @@ def test_load_fun_create_json_file(s3_client):
     bucket_name = 'team-hyper-accelerated-dragon-bucket-ingestion'
     s3_client.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={'LocationConstraint': 'eu-west-2'})
     load_table(db_name, fake_data, date_to_compare)
-    load_table(db_name, fake_data, date_to_compare2)
+    load_table(db_name, fake_data, date_to_compare)
     # Verify the file was uploaded correctly
     obj = s3_client.list_objects(Bucket=bucket_name)
     print(obj['Contents'])
