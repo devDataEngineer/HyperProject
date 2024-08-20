@@ -1,23 +1,43 @@
 import boto3
 from datetime import datetime
+from botocore.exceptions import ClientError
+import logging
 
-def upload_time_to_param(current_time):
-    
-    
-    timestamp1 = datetime.timestamp(current_time)
-    str_timestamp = str(timestamp1)
+logger = logging.getLogger()
+logger.setLevel("INFO")
+
+def update_time_param() -> tuple[datetime, datetime]:
+    """
+    Fetches and updates previous time from AWS SSM
+    Returns tuple containing current and previous times (start and end of window)
+    """
+
+    current_time = datetime.now()
+    previous_time = datetime(1990, 1, 1, 0, 0, 0, 111111)
 
     client = boto3.client('ssm')
-    client.put_parameter(Name='dragons_time_param', Value=str_timestamp, 
-                         Type='String', Overwrite=True)
-
-
-def get_date_from_param():
-    client = boto3.client('ssm')
-
-    response = client.get_parameter(
-    Name='dragons_time_param')
-    
-    timestamp_float = float(response['Parameter']['Value'])
-    previous_date_time = datetime.fromtimestamp(timestamp_float)
-    return previous_date_time
+    try:
+        response = client.get_parameter(Name = 'dragons_time_param')
+        previous_time = datetime.strptime(
+            response['Parameter']['Value'],
+            '%Y-%m-%d %H:%M:%S.%f'
+            )
+        client.put_parameter(
+                Name = 'dragons_time_param',
+                Value = str(current_time),
+                Type = 'String',
+                Overwrite = True
+                )
+    except client.exceptions.ParameterNotFound:
+        try:
+            client.put_parameter(
+                Name = 'dragons_time_param',
+                Value = str(current_time),
+                Type = 'String',
+                Overwrite = True
+                )
+        except ClientError as e:
+            logger.error(f"An error occurred: {e}")
+            pass
+        
+    return current_time, previous_time
