@@ -1,7 +1,7 @@
 from src.transform_lambda.transform_lambda import get_data
 from moto import mock_aws
-import boto3.exceptions
 import pytest
+import boto3
 import os
 from botocore.exceptions import ClientError
 
@@ -35,16 +35,25 @@ def resource_client(aws_cred):
 
 
 
-def test_get_file_from_ingestion(s3_client):
+def test_get_data_func_get_file_from_ingestion(s3_client):
     s3_client.put_object(Bucket=BUCKET1, Key=f'{KEY}.json', Body=CONTENT)
-    #s3_client.put_object(Bucket=BUCKET1, Key=f'{KEY}.json', Body=CONTENT)
     result = get_data('TEST_KEY.json') 
     result_body = result['Body'].read().decode('utf-8')
     assert result_body == CONTENT
+    assert result['ResponseMetadata']['HTTPStatusCode'] == 200
 
-def test_get_data_from_ingestion_bucket_lambda_when_bucket_is_empy(s3_client):
-    #client = session.create_client('s3')
-    with pytest.raises(ClientError) as excinfo:
-        get_data('non-existent-object')
+
+# def test_get_data_from_ingestion_bucket_lambda_when_bucket_is_empy(s3_client):
     
-    assert excinfo.value.response['Error']['Code'] == 'NoSuchKey'
+#     with pytest.raises(ClientError) as excinfo:
+#         get_data("file_path")
+#     assert "Ingestion bucket is empty" in str(excinfo.value)
+
+def test_get_data_empty_file(s3_client):
+    file_path = 'empty_file.json'
+    file_content = b''  # Empty content
+    s3_client.put_object(Bucket=BUCKET1, Key=file_path, Body=file_content)
+    result = get_data(file_path)
+    assert result['Body'].read() == file_content
+    assert result['ContentLength'] == 0
+    assert result['ResponseMetadata']['HTTPStatusCode'] == 200

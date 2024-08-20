@@ -1,10 +1,6 @@
 import json
-import pandas as pd
 import boto3
-import boto3.exceptions
-import botocore
-
-
+from botocore.exceptions import ClientError
 
 def get_data(file_path):
 
@@ -16,8 +12,7 @@ def get_data(file_path):
     
     file = s3_client.get_object(Bucket=SOURCE_BUCKET, Key=file_path)
     return file
-   except Exception as e:
-    
+   except ClientError as e:
         print("Ingestion bucket is empty: " + str(e))
 
 
