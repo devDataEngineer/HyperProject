@@ -94,7 +94,7 @@ def load_table(
 def load_all_tables(
         current_time: datetime,
         previous_time: datetime
-        ) -> list[str]:
+        ) -> dict:
     """DOCSTRING GOES HERE"""
 
     tables_modified = {}
@@ -133,9 +133,20 @@ def load_all_tables(
             Message = "Export lambda failed to pull from DB"
             )
 
+    finally:
+        return tables_modified
+    
 
-def lambda_handler(event, context) -> list[str]:
-    """DOCSTRING GOES HERE"""
+def lambda_handler(event, context) -> dict:
+    """DOCSTRING GOES HERE
+    output = {
+        "table_name_1": "filepath_1",
+        "table_name_2": "filepath_2"
+        }
+    key value pair for each table that has new entries
+    key as table name
+    value as path to file in s3 bucket
+    """
 
     current_time, previous_time = update_time_param()
 
