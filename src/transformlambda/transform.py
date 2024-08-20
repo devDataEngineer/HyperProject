@@ -6,49 +6,43 @@ import pandas as pd
 #     "currency": "currency/2024/08/20/12-00-00.json"
 # }
 
-def transform_counterparty(data: pd.DataFrame) -> pd.DataFrame:
+def create_fact_sales_order_df(sales_order: pd.DataFrame) -> pd.DataFrame:
     """DOCSTRING GOES HERE"""
     pass
 
-def transform_currency(data: pd.DataFrame) -> pd.DataFrame:
+def create_dim_staff_df(fact_sales_order: pd.DataFrame, staff: pd.DataFrame, department: pd.DataFrame) -> pd.DataFrame:
     """DOCSTRING GOES HERE"""
     pass
 
-def transform_department(data: pd.DataFrame) -> pd.DataFrame:
+def create_dim_location_df(fact_sales_order: pd.DataFrame, address: pd.DataFrame) -> pd.DataFrame:
     """DOCSTRING GOES HERE"""
     pass
 
-def transform_design(data: pd.DataFrame) -> pd.DataFrame:
+def create_dim_date_df(fact_sales_order: pd.DataFrame) -> pd.DataFrame:
     """DOCSTRING GOES HERE"""
     pass
 
-def transform_staff(data: pd.DataFrame) -> pd.DataFrame:
+def create_dim_currency_df(fact_sales_order: pd.DataFrame, currency: pd.DataFrame) -> pd.DataFrame:
     """DOCSTRING GOES HERE"""
     pass
 
-def transform_sales_order(data: pd.DataFrame) -> pd.DataFrame:
+def create_dim_counterparty_df(fact_sales_order: pd.DataFrame, counterparty: pd.DataFrame, address: pd.DataFrame) -> pd.DataFrame:
     """DOCSTRING GOES HERE"""
     pass
 
-def transform_address(data: pd.DataFrame) -> pd.DataFrame:
-    """DOCSTRING GOES HERE"""
-    pass
-
-def transform_payment(data: pd.DataFrame) -> pd.DataFrame:
-    """DOCSTRING GOES HERE"""
-    pass
-
-def transform_purchase_order(data: pd.DataFrame) -> pd.DataFrame:
-    """DOCSTRING GOES HERE"""
-    pass
-
-def transform_payment_type(data: pd.DataFrame) -> pd.DataFrame:
-    """DOCSTRING GOES HERE"""
-    pass
-
-def transform_transaction(data: pd.DataFrame) -> pd.DataFrame:
-    """DOCSTRING GOES HERE"""
-    pass
+# tables = {
+#     "counterparty": pd.DataFrame(),
+#     "currency": pd.DataFrame(),
+#     "department": pd.DataFrame(),
+#     "design": pd.DataFrame(),
+#     "staff": pd.DataFrame(),
+#     "sales_order": pd.DataFrame(),
+#     "address": pd.DataFrame(),
+#     "payment": pd.DataFrame(),
+#     "purchase_order": pd.DataFrame(),
+#     "payment_type": pd.DataFrame(),
+#     "transaction": pd.DataFrame()
+# }
 
 def get_data(filepath: str) -> str:
     """Retrieves a single file from s3 ingestion bucket
