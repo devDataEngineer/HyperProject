@@ -1,11 +1,12 @@
 try:
     from connection import close_db_connection, db_connection
     from utilities import format_extract_lambda_as_rows
-    from time_param_funcs import upload_time_to_param, get_date_from_param
+    from time_param_funcs import update_time_param
 except:
     from src.extractlambda.connection import close_db_connection, db_connection
     from src.extractlambda.utilities import format_extract_lambda_as_rows
-    from src.extractlambda.time_param_funcs import upload_time_to_param, get_date_from_param
+    from src.extractlambda.time_param_funcs import update_time_param
+
 from pg8000 import DatabaseError
 
 from datetime import datetime
@@ -18,71 +19,129 @@ import json
 logger = logging.getLogger()
 logger.setLevel("INFO")
 
-date_to_compare = get_date_from_param()
 
-def load_table(table_name, table_data, date_to_compare):
-    logger.info(f"packing table {table_name} into {table_name}/{timestamp}.json")
-    try:
-        s3 = boto3.client('s3')
-        BUCKET_NAME = 'team-hyper-accelerated-dragon-bucket-ingestion'
-        timestamp = date_to_compare.strftime('%Y/%m/%d/%H-%M-%S')
-        data_with_json_format = json.dumps(table_data, indent=4, sort_keys=True, default=str)
-        json_bytes = json.dumps(data_with_json_format).encode('UTF-8')
+def read_table(
+        table_name: str,
+        current_time: datetime,
+        previous_time: datetime
+        ) -> str | None:
+    """DOCSTRING GOES HERE"""
 
-        s3.put_object(Body=json_bytes, Bucket=BUCKET_NAME, Key=f'{table_name}/{timestamp}.json')
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        return False
+    logger.info(f"Reading table {table_name}")
+
+    table_whitelist = [
+        'counterparty', 'currency', 'department',
+        'design', 'staff', 'sales_order',
+        'address', 'payment', 'purchase_order',
+        'payment_type', 'transaction'
+        ]
     
-def read_table(db_table):
-    global date_to_compare
-    logger.info(f"reading table {db_table}")
-    table_whitelist = ['counterparty', 'currency', 'department', 'design', 
-                       'staff', 'sales_order', 'address', 'payment', 
-                       'purchase_order', 'payment_type', 'transaction']
-    
-    if db_table not in table_whitelist:
-        raise ValueError(f"Invalid table name: {db_table}")
+    if table_name not in table_whitelist:
+        raise ValueError(f"Invalid table name: {table_name}")
     
     try:
         conn = db_connection()
-        current_date_time=datetime.now()
-        query = f"""SELECT * FROM {db_table}
-                    WHERE last_updated BETWEEN :date_to_compare AND :current_date_time;"""
+        query = f"""SELECT * FROM {table_name}
+                    WHERE last_updated BETWEEN :previous_time AND :current_time;"""
         
-        rows = conn.run(query, date_to_compare=date_to_compare, current_date_time=current_date_time)
+        rows = conn.run(query, current_time = current_time, previous_time = previous_time)
         column_list = [conn.columns[i]['name'] for i in range(len(conn.columns))]
-        formatted = format_extract_lambda_as_rows(rows,column_list)
-        upload_time_to_param(current_date_time)
-        return formatted, current_date_time
+        formatted = format_extract_lambda_as_rows(rows, column_list)
+        close_db_connection(conn)
+        return formatted
     
     except DatabaseError as e:
-        logger.info(f"got an error when reading table {db_table}")
+        logger.info(f"got an error when reading table {table_name}")
         raise e
-    
-    finally:
-        close_db_connection(conn)
+
+def get_filename(table_name, current_time: datetime) -> str:
+    return f"{table_name}/{current_time.strftime('%Y/%m/%d/%H-%M-%S')}.json"
+
+def load_table(
+        table_name: str,
+        table_data: str,
+        current_time: datetime
+        ) -> None:
+    """DOCSTRING GOES HERE"""
+
+    try:
+        s3 = boto3.client('s3')
+        BUCKET_NAME = 'team-hyper-accelerated-dragon-bucket-ingestion'
+        timestamp = current_time.strftime('%Y/%m/%d/%H-%M-%S')
+
+        logger.info(
+            f"Packing table {table_name} into {table_name}/{timestamp}.json"
+            )
+        json_bytes = json.dumps(
+            table_data,
+            indent=4,
+            sort_keys=True,
+            default=str
+            ).encode('UTF-8')
 
 
-def load_all_tables():
-    logger.info("loading all tables...")
-    table_list = ['counterparty', 'currency', 'department', 'design', 
-                       'staff', 'sales_order', 'address', 'payment', 
-                       'purchase_order', 'payment_type', 'transaction']
-    for table in table_list:
-        load_table(table, read_table(table)[0])
-
-def lambda_handler(event, context):   
-   logger.info(f"running extract lambda_handler at {datetime.now()}")
-   logger.info(f"date_to_compare is {date_to_compare}")
-
-   try:
-      load_all_tables()
-    
-   except:
-      topic_arn = os.environ.get('TOPIC_ARN')
-      client = boto3.client('sns')  
-      client.publish(TopicArn=topic_arn,Message="Error has occured")
+        logger.info(f"Loading table {table_name} into ingestion bucket")
+        s3.put_object(
+            Body=json_bytes,
+            Bucket=BUCKET_NAME,
+            Key=f'{table_name}/{timestamp}.json'
+            )
+        
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 
+def load_all_tables(
+        current_time: datetime,
+        previous_time: datetime
+        ) -> list[str]:
+    """DOCSTRING GOES HERE"""
 
+    tables_modified = {}
+    try:
+        logger.info("Attempting to load all tables")
+        table_list = [
+            'counterparty', 'currency', 'department', 'design',
+            'staff', 'sales_order', 'address', 'payment',
+            'purchase_order', 'payment_type', 'transaction'
+            ]
+        for table in table_list:
+            logger.info(f"Reading table {table}")
+            table_data = read_table(
+                table_name = table,
+                current_time = current_time,
+                previous_time = previous_time
+                )
+            if (len(table_data) > 0):
+                logger.info(f"Table {table} has updated contents")
+                tables_modified[table] = get_filename(
+                    table_name = table,
+                    current_time = current_time
+                    )
+                load_table(
+                    table_name = table,
+                    table_data = table_data,
+                    current_time = current_time
+                    )
+
+    except:
+        # add ERROR logger (metric alarm??)
+        topic_arn = os.environ.get('TOPIC_ARN')
+        client = boto3.client('sns')  
+        client.publish(
+            TopicArn = topic_arn,
+            Message = "Export lambda failed to pull from DB"
+            )
+
+
+def lambda_handler(event, context) -> list[str]:
+    """DOCSTRING GOES HERE"""
+
+    current_time, previous_time = update_time_param()
+
+    logger.info(f"Running extract lambda_handler!")
+    logger.info(f"current_time = {current_time}")
+    logger.info(f"previous_time = {previous_time}")
+
+    tables_modified = load_all_tables(current_time, previous_time)
+    return tables_modified
