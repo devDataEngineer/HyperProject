@@ -72,8 +72,8 @@ def test_convert_json_to_df(s3_client):
 def test_df_dim_currency(s3_client):
     columns = { "currency_id":"integer",
                "currency_code": "string",
-               "currency_name": "string"
-               "created_at":"datetime",
+               "currency_name": "string",
+               "created_at": "datetime",
             "last_update":"datetime"
           }
     dfmock = DFMock(count=100, columns=columns)
@@ -81,6 +81,7 @@ def test_df_dim_currency(s3_client):
     my_mocked_dataframe = dfmock.dataframe
     result = create_df_dim_currency(my_mocked_dataframe)
     assert "created_at" not in result
+    assert "currency_id" in result
 
 
 

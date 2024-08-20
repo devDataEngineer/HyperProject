@@ -28,6 +28,7 @@ def convert_json_to_df(jsonfile):
 def create_fact_sales_order_df(df_fact_slae):
    pass
 
+#--------------formate dim_currency data frame----------------------------#
 def create_df_dim_currency(df_currency):
    dim_currency = df_currency.drop(columns=['created_at','last_update'])
    return dim_currency
