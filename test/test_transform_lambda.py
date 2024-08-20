@@ -1,9 +1,12 @@
-from src.transform_lambda.transform_lambda import get_data
+from src.transform_lambda.transform_lambda import get_data, convert_json_to_df, create_df_dim_currency
 from moto import mock_aws
 import pytest
 import boto3
 import os
 from botocore.exceptions import ClientError
+from dfmock import DFMock
+
+
 
 
 @pytest.fixture
@@ -57,3 +60,29 @@ def test_get_data_empty_file(s3_client):
     assert result['Body'].read() == file_content
     assert result['ContentLength'] == 0
     assert result['ResponseMetadata']['HTTPStatusCode'] == 200
+
+#--------------test for convert function------------------#
+
+def test_convert_json_to_df(s3_client):
+    s3_client.put_object(Bucket=BUCKET1, Key=f'{KEY}.json', Body=CONTENT)
+    json_file = get_data(f'{KEY}.json')
+    convert_json_to_df(json_file)
+    
+#-----test for formating dim_currency data frame-------#
+def test_df_dim_currency(s3_client):
+    columns = { "currency_id":"integer",
+               "currency_code": "string",
+               "currency_name": "string"
+               "created_at":"datetime",
+            "last_update":"datetime"
+          }
+    dfmock = DFMock(count=100, columns=columns)
+    dfmock.generate_dataframe()
+    my_mocked_dataframe = dfmock.dataframe
+    result = create_df_dim_currency(my_mocked_dataframe)
+    assert "created_at" not in result
+
+
+
+
+

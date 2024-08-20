@@ -1,6 +1,8 @@
 import json
 import boto3
-from botocore.exceptions import ClientError
+import boto3.exceptions
+import pandas as pd
+import io
 
 def get_data(file_path):
 
@@ -12,13 +14,20 @@ def get_data(file_path):
     
     file = s3_client.get_object(Bucket=SOURCE_BUCKET, Key=file_path)
     return file
-   except ClientError as e:
+   except Exception as e:
         print("Ingestion bucket is empty: " + str(e))
 
+#--------------convert json to df for test purpose ------------------------------#
+def convert_json_to_df(jsonfile):
+   data = jsonfile['Body'].read().decode('utf-8')
+   string_io = io.StringIO(data)
+   df = pd.read_json(string_io, orient='records')
+   return df
 
-    
-    
-    
-    
 
+def create_fact_sales_order_df(df_fact_slae):
+   pass
 
+def create_df_dim_currency(df_currency):
+   dim_currency = df_currency.drop(columns=['created_at','last_update'])
+   return dim_currency
