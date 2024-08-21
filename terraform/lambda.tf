@@ -36,7 +36,7 @@ resource "aws_lambda_function" "extract_lambda" {
   layers = [
     aws_lambda_layer_version.extract-layer.arn
   ]
-  timeout = 30
+  timeout = 120
 }
 
 resource "aws_cloudwatch_log_group" "extract_lambda_cw_group"{
@@ -98,14 +98,17 @@ resource "aws_lambda_permission" "ssm_GetParameter" {
 #     }
 
 
-#  add permission to transform lambda function to be started by s3 bucket notification
-resource "aws_lambda_permission" "allow_bucket" {
-  statement_id  = "AllowExecutionFromS3Bucket"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.extract_lambda.function_name
-  principal     = "s3.amazonaws.com"
-  source_arn    = aws_s3_bucket.ingestion-bucket.arn
-}
+# Commented out after confirming with Cris, because this was another trigger 
+# for the Extract Lambda.Previous comment: add permission to transform lambda 
+# function to be started by s3 bucket notification
+
+# resource "aws_lambda_permission" "allow_bucket" {
+#   statement_id  = "AllowExecutionFromS3Bucket"
+#   action        = "lambda:InvokeFunction"
+#   function_name = aws_lambda_function.extract_lambda.function_name
+#   principal     = "s3.amazonaws.com"
+#   source_arn    = aws_s3_bucket.ingestion-bucket.arn
+# }
 
 
 
