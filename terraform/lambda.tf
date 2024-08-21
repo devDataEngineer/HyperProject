@@ -36,7 +36,8 @@ resource "aws_lambda_function" "extract_lambda" {
   layers = [
     aws_lambda_layer_version.extract-layer.arn
   ]
-  timeout = 120
+  timeout = 180 
+  # set the value to 3 minutes to be extra sure lambda does not fail
 }
 
 resource "aws_cloudwatch_log_group" "extract_lambda_cw_group"{
