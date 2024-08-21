@@ -68,7 +68,7 @@ env.bak/
 venv.bak/
 
 # Local .terraform directories
-/.terraform
+*/.terraform
 
 # .tfstate files
 *.tfstate

@@ -125,12 +125,12 @@ def load_all_tables(
                     )
 
     except:
-        # add ERROR logger (metric alarm??)
+        logger.error("Extract lambda failed to pull from DB")
         topic_arn = os.environ.get('TOPIC_ARN')
         client = boto3.client('sns')  
         client.publish(
             TopicArn = topic_arn,
-            Message = "Export lambda failed to pull from DB"
+            Message = "Extract lambda failed to pull from DB"
             )
 
     finally:
