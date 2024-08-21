@@ -1,4 +1,4 @@
-from src.transform_lambda.transform_lambda import get_data, create_df_dim_currency, create_df_dim_date
+from src.transform_lambda.transform_lambda import get_data, create_df_dim_currency, create_df_dim_date, create_df_fact_sales_order
 from moto import mock_aws
 import pytest
 import boto3
@@ -70,15 +70,7 @@ def test_get_data_from_ingestion_bucket_lambda_when_bucket_is_empy(s3_client):
 #     convert_json_to_df(json_file)
     
 #-----test for formating dim_currency data frame-------#
-def test_df_dim_currency(s3_client):
-    # columns = { "currency_id":"integer",
-    #            "currency_code": "string",
-    #            "created_at": "datetime",
-    #         "last_update":"datetime"
-    #       }
-    # dfmock = DFMock(count=5, columns=columns)
-    # dfmock.generate_dataframe()
-    # my_mocked_dataframe = dfmock.dataframe
+def test_df_dim_currency():
     data = {'currency_id':[1,2,3,4],
         'currency_code':['GBP','USD','EUR','CHF'],
         'created_at': [datetime.now(),datetime.now(),datetime.now(),datetime.now()],
@@ -91,7 +83,7 @@ def test_df_dim_currency(s3_client):
 
 
 #-----test for formating dim_date data frame-------#
-def test_df_dim_date(s3_client):
+def test_df_dim_date():
     data = { 
         'created_date':[datetime.now()]
     }
@@ -101,6 +93,33 @@ def test_df_dim_date(s3_client):
         result.columns, {'date_id', 'year','month','day','day_of_week','day_name','month_name','quarter'}
     )
     assert 'created_date' not in result.columns
+
+#-----test for formating fact_sales data frame-------#
+
+def test_fact_sales_order_data():
+    colum = { "sales_order_id": "integer",
+            "created_at": "datetime",
+            "last_updated": "datetime",
+            "design_id": "integer",
+            "staff_id": "integer",
+            "counterparty_id": "integer",
+            "units_sold": "integer",
+            "unit_price": "integer",
+            "currency_id": "integer",
+            "agreed_delivery_date": "datetime",
+            "agreed_payment_date": "datetime",
+            "agreed_delivery_location_id": "integer"
+          }
+    dfmock = DFMock(count=5, columns=colum)
+    dfmock.generate_dataframe()
+    my_mocked_dataframe = dfmock.dataframe
+    result = create_df_fact_sales_order(my_mocked_dataframe)    
+    dt.validate(
+        result.columns, {'sales_record_id','sales_order_id', 'created_date', 'created_time', 'last_updated_date',
+       'last_updated_time', 'sales_staff_id', 'counterparty_id', 'units_sold',
+       'unit_price', 'currency_id', 'design_id', 'agreed_payment_date',
+       'agreed_delivery_date', 'agreed_delivery_location_id'}
+    )
 
 
 
