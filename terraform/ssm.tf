@@ -1,5 +1,5 @@
-resource "aws_ssm_parameter" "ssm_parmeter" {
+resource "aws_ssm_parameter" "ssm_parameter" {
   name  = var.ssm_parameter_name
   type  = "String"
-  value = "315550800"
+  value = "1990-01-01 10:10:10.111111"
 }

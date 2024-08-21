@@ -82,7 +82,7 @@ data "aws_iam_policy_document" "ssm_document" {
       "ssm:GetParameter",
       "ssm:PutParameter"
     ]
-    resources = [aws_ssm_parameter.ssm_parmeter.arn]
+    resources = [aws_ssm_parameter.ssm_parameter.arn]
   }
 }
 resource "aws_iam_policy" "ssm_policy" {
@@ -95,6 +95,21 @@ resource "aws_iam_role_policy_attachment" "lambda_ssm_policy_attachment" {
 
 }
 
+data "aws_iam_policy_document" "secret_manager_document" {
+	statement {
+		actions = ["secretsmanager:GetSecretValue"]
+    resources = ["arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:*"]	
+		}
+}
+resource "aws_iam_policy" "secret_manager_policy" {
+  name_prefix = "secret-manager-policy-extract-lambda"
+  policy      = data.aws_iam_policy_document.secret_manager_document.json
+}
+resource "aws_iam_role_policy_attachment" "secret_manager_policy_attachment" {
+  role       = aws_iam_role.extract_lambda_role.name
+  policy_arn = aws_iam_policy.secret_manager_policy.arn
+
+}
 
 
 

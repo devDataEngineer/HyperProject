@@ -28,16 +28,8 @@ def update_time_param() -> tuple[datetime, datetime]:
                 Type = 'String',
                 Overwrite = True
                 )
-    except client.exceptions.ParameterNotFound:
-        try:
-            client.put_parameter(
-                Name = 'dragons_time_param',
-                Value = str(current_time),
-                Type = 'String',
-                Overwrite = True
-                )
-        except ClientError as e:
-            logger.error(f"An error occurred: {e}")
-            pass
+    
+    except ClientError as e:
+        logger.error(f"An error occurred: {e}")
         
     return current_time, previous_time
