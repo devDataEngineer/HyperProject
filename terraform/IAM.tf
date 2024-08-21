@@ -82,7 +82,7 @@ data "aws_iam_policy_document" "ssm_document" {
       "ssm:GetParameter",
       "ssm:PutParameter"
     ]
-    resources = [aws_ssm_parameter.ssm_parmeter.arn]
+    resources = [aws_ssm_parameter.ssm_parameter.arn]
   }
 }
 resource "aws_iam_policy" "ssm_policy" {
