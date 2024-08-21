@@ -7,7 +7,7 @@ import io
 def get_data(file_path):
 
    s3_client = boto3.client('s3') 
-
+   objject_lsit = []
    SOURCE_BUCKET = 'Ingestion_bucket'
    DESTINATION_BUCKET = 'Transform_bucket'
    try :
@@ -18,11 +18,11 @@ def get_data(file_path):
         print("Ingestion bucket is empty: " + str(e))
 
 #--------------convert json to df for test purpose ------------------------------#
-def convert_json_to_df(jsonfile):
-   data = jsonfile['Body'].read().decode('utf-8')
-   string_io = io.StringIO(data)
-   df = pd.read_json(string_io, orient='records')
-   return df
+# def convert_json_to_df(jsonfile):
+#    data = jsonfile['Body'].read().decode('utf-8')
+#    string_io = io.StringIO(data)
+#    df = pd.read_json(string_io, orient='records')
+#    return df
 
 
 def create_fact_sales_order_df(df_fact_slae):
