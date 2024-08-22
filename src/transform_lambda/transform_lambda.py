@@ -22,10 +22,6 @@ def get_data(file_path: str):
         raise e
 
 
-
-def create_fact_sales_order_df(df_fact_slae):
-   pass
-
 #----------formate dim_currency data frame----------------------#
 def create_df_dim_currency(df_currency):
    dim_currency = df_currency
