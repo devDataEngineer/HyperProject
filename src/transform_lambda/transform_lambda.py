@@ -71,7 +71,8 @@ def create_df_fact_sales_order(df_sales_order):
    start_value = 1
    stop_value = len(fact_sales_order) + 1  # adjust this based on your DataFrame size
    step = 1
-   increment_values = np.arange(start_value, stop_value, step)
+   fact_sales_order['sales_record_id'] = np.arange(start_value, stop_value, step)
+
    fact_sales_order.set_index = fact_sales_order['sales_record_id']
    fact_sales_order = fact_sales_order.reindex(columns=['sales_record_id', 'sales_order_id', 'created_date', 'created_time', 'last_updated_date', 'last_updated_time', 
                                                         'sales_staff_id', 'counterparty_id', 'units_sold', 'unit_price', 'currency_id', 'design_id', 

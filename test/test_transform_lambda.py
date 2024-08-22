@@ -105,13 +105,15 @@ def test_fact_sales_order_data():
     dfmock = DFMock(count=5, columns=colum)
     dfmock.generate_dataframe()
     my_mocked_dataframe = dfmock.dataframe
-    result = create_df_fact_sales_order(my_mocked_dataframe)    
+    result = create_df_fact_sales_order(my_mocked_dataframe) 
+    print(result)   
     dt.validate(
         result.columns, {'sales_record_id','sales_order_id', 'created_date', 'created_time', 'last_updated_date',
        'last_updated_time', 'sales_staff_id', 'counterparty_id', 'units_sold',
        'unit_price', 'currency_id', 'design_id', 'agreed_payment_date',
        'agreed_delivery_date', 'agreed_delivery_location_id'}
     )
+
 
 
 
