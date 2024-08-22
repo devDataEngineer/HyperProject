@@ -3,27 +3,31 @@ import boto3
 import boto3.exceptions
 import pandas as pd
 import numpy as np
+import logging
 
-import pyspark.sql.functions as F
-import io
+logger = logging.getLogger()
+logger.setLevel("INFO")
+
 
 def get_data(file_path: str):
    s3_client = boto3.client('s3') 
-   SOURCE_BUCKET = 'Ingestion_bucket'
+   SOURCE_BUCKET = 'team-hyper-accelerated-dragon-bucket-ingestion'
    file_key = file_path
    try :
-      if file_path.startswith("S3://"):
+      if file_path.startswith("s3://"):
          file_path = file_path[5:]
          SOURCE_BUCKET, file_key = file_path.split('/',1)
+      logger.info(f"Reading file {file_path} from the Ingestion s3 bucket")
       file = s3_client.get_object(Bucket=SOURCE_BUCKET, Key=file_key)
       return file
    except Exception as e:
-        print("File path is wrong: " + str(e))
-        raise e
+      logger.error(f"Error occured during reading the file {file_path}. More info:" + str(e))
+      raise e
 
 
 #----------formate dim_currency data frame----------------------#
 def create_df_dim_currency(df_currency):
+   logger.info("Started processing dim_currency DataFrame")
    dim_currency = df_currency
    currency_names = {
             'GBP': 'British Pound',
@@ -35,10 +39,12 @@ def create_df_dim_currency(df_currency):
    dim_currency = dim_currency.drop(columns = ['created_at','last_update'])
    dim_currency.set_index= dim_currency['currency_id']
    dim_currency.name = "dim_currency"
+   logger.info("Finishing processing dim_currency DataFrame")
    return dim_currency
 
 #----------formate dim_date_df data frame----------------------#
 def create_df_dim_date(df_fact_sales_order): # get df_fact_sale as argument
+   logger.info("Started processing dim_date DataFrame")
    dim_date = df_fact_sales_order[['created_date']]
    dim_date['year'] = pd.DatetimeIndex(dim_date['created_date']).year
    dim_date['month'] = pd.DatetimeIndex(dim_date['created_date']).month
@@ -50,6 +56,7 @@ def create_df_dim_date(df_fact_sales_order): # get df_fact_sale as argument
    dim_date = dim_date.rename(columns = {'created_date': "date_id"})
    dim_date.set_index = dim_date['date_id']
    dim_date.name = 'dim_date'
+   logger.info("Finishing processing dim_date DataFrame")
    return dim_date
 
 
@@ -57,6 +64,7 @@ def create_df_dim_date(df_fact_sales_order): # get df_fact_sale as argument
 #sales_record_id [SERIAL], created_date
 #----------formate dim_date_df data frame----------------------#
 def create_df_fact_sales_order(df_sales_order):
+   logger.info("Started processing fact_sales DataFrame")
    fact_sales_order = df_sales_order
    fact_sales_order.name = 'fact_sales_order'
    fact_sales_order['created_at'] = pd.to_datetime(fact_sales_order['created_at'])
@@ -77,6 +85,7 @@ def create_df_fact_sales_order(df_sales_order):
    fact_sales_order = fact_sales_order.reindex(columns=['sales_record_id', 'sales_order_id', 'created_date', 'created_time', 'last_updated_date', 'last_updated_time', 
                                                         'sales_staff_id', 'counterparty_id', 'units_sold', 'unit_price', 'currency_id', 'design_id', 
                                                         'agreed_payment_date', 'agreed_delivery_date', 'agreed_delivery_location_id'])
+   logger.info("Finishing processing fact_sales DataFrame")
    return fact_sales_order
 
 
