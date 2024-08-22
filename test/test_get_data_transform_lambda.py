@@ -1,9 +1,9 @@
 from src.transform_lambda.get_data import get_data_from_ingestion_bucket
-from moto import mock_aws
 import pytest
 import boto3
 import os
 from botocore.exceptions import ClientError
+from moto import mock_aws
 
 @pytest.fixture
 def aws_creds():

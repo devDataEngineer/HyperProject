@@ -1,6 +1,5 @@
 from src.transform_lambda.create_df_dim_currency import create_df_dim_currency
 import pytest
-from botocore.exceptions import ClientError
 from datetime import datetime
 import pandas as pd
 import datatest as dt
