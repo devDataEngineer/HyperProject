@@ -5,10 +5,10 @@ import logging
 logger = logging.getLogger()
 logger.setLevel("INFO")
 
-example_argument = {
-    "counterparty": "counterparty/2024/08/20/12-00-00.json",
-    "currency": "currency/2024/08/20/12-00-00.json"
-}
+# example_argument = {
+#     "counterparty": "counterparty/2024/08/20/12-00-00.json",
+#     "currency": "currency/2024/08/20/12-00-00.json"
+# }
 
 # -------------------------------------------------------------------------- #
 
