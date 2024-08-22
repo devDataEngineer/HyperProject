@@ -77,7 +77,8 @@ def test_df_dim_currency():
 #-----test for formating dim_date data frame-------#
 def test_df_dim_date():
     data = { 
-        'created_date':[datetime.now()]
+        'created_date':[datetime.now()],
+        'name': "abcde"
     }
     df = pd.DataFrame(data)
     result = create_df_dim_date(df)
@@ -106,7 +107,6 @@ def test_fact_sales_order_data():
     dfmock.generate_dataframe()
     my_mocked_dataframe = dfmock.dataframe
     result = create_df_fact_sales_order(my_mocked_dataframe) 
-    print(result)   
     dt.validate(
         result.columns, {'sales_record_id','sales_order_id', 'created_date', 'created_time', 'last_updated_date',
        'last_updated_time', 'sales_staff_id', 'counterparty_id', 'units_sold',

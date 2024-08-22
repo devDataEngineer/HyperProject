@@ -38,8 +38,8 @@ def create_df_dim_currency(df_currency):
    return dim_currency
 
 #----------formate dim_date_df data frame----------------------#
-def create_df_dim_date(df_date):
-   dim_date = df_date
+def create_df_dim_date(df_fact_sales_order): # get df_fact_sale as argument
+   dim_date = df_fact_sales_order[['created_date']]
    dim_date['year'] = pd.DatetimeIndex(dim_date['created_date']).year
    dim_date['month'] = pd.DatetimeIndex(dim_date['created_date']).month
    dim_date['day'] = pd.DatetimeIndex(dim_date['created_date']).day
