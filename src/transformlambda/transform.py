@@ -154,7 +154,7 @@ def lambda_handler(event, context) -> None:
             )
         logger.info(f"File created: {dataframe_parquet_filepaths[df]}")
 
-    logger.info("Uploading parquet files to Transform S3 Bucket")
+    logger.info("Uploading parquet files to Processed S3 Bucket")
     for df in dataframe_list:
         logger.info(f"Uploading {df}...")
         upload_to_transform_bucket(
