@@ -60,14 +60,6 @@ def test_get_data_from_ingestion_bucket_lambda_when_bucket_is_empy(s3_client):
     with pytest.raises(ClientError) as excinfo:
         get_data("file_path")
 
-
-
-# #--------------test for convert function------------------#
-
-# def test_convert_json_to_df(s3_client):
-#     s3_client.put_object(Bucket=BUCKET1, Key=f'{KEY}.json', Body=CONTENT)
-#     json_file = get_data(f'{KEY}.json')
-#     convert_json_to_df(json_file)
     
 #-----test for formating dim_currency data frame-------#
 def test_df_dim_currency():

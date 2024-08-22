@@ -21,12 +21,6 @@ def get_data(file_path: str):
         print("File path is wrong: " + str(e))
         raise e
 
-# # ---------[test purpose]convert json to df-------------------#
-# def convert_json_to_df(jsonfile):
-#    data = jsonfile['Body'].read().decode('utf-8')
-#    string_io = io.StringIO(data)
-#    df = pd.read_json(string_io, orient='records')
-#    return df
 
 
 def create_fact_sales_order_df(df_fact_slae):
