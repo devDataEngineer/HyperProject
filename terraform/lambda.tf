@@ -6,15 +6,15 @@ data "archive_file" "extract_layer" {
 }
 
 resource "aws_lambda_layer_version" "extract-layer" {
-  filename            = "${path.module}/../src/lambda-layer.zip"
+  filename            = "${path.module}/../src/extract-lambda-layer.zip"
   layer_name          = "extract-layer"
   compatible_runtimes = [var.python_runtime]
 }
 
 data "archive_file" "layer_zip" {
   type        = "zip"
-  source_dir  = "${path.module}/../src/lambda-layer"
-  output_path = "${path.module}/../src/lambda-layer.zip"
+  source_dir  = "${path.module}/../src/extract-lambda-layer"
+  output_path = "${path.module}/../src/extract-lambda-layer.zip"
 }
 
 resource "aws_lambda_function" "extract_lambda" {
