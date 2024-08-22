@@ -9,19 +9,6 @@ from datetime import datetime
 import pandas as pd
 import datatest as dt
 
-    
-#-----test for formating dim_currency data frame-------#
-def test_df_dim_currency():
-    data = {'currency_id':[1,2,3,4],
-        'currency_code':['GBP','USD','EUR','CHF'],
-        'created_at': [datetime.now(),datetime.now(),datetime.now(),datetime.now()],
-        'last_update':[datetime.now(),datetime.now(),datetime.now(),datetime.now()]
-                       }
-    df = pd.DataFrame(data)
-    result = create_df_dim_currency(df)
-    assert "last_update" not in result.columns
-    assert "currency_id" in result.columns
-
 
 #-----test for formating dim_date data frame-------#
 def test_df_dim_date():

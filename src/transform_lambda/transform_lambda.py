@@ -9,24 +9,6 @@ logger = logging.getLogger()
 logger.setLevel("INFO")
 
 
-
-#----------formate dim_currency data frame----------------------#
-def create_df_dim_currency(df_currency):
-   logger.info("Started processing dim_currency DataFrame")
-   dim_currency = df_currency
-   currency_names = {
-            'GBP': 'British Pound',
-            'USD': 'US Dollar',
-            'EUR': 'Euro',
-            'CHF': 'Swiss Franc'
-        }
-   dim_currency['currency_name'] = dim_currency['currency_code'].apply(lambda x: currency_names[x])
-   dim_currency = dim_currency.drop(columns = ['created_at','last_update'])
-   dim_currency.set_index= dim_currency['currency_id']
-   dim_currency.name = "dim_currency"
-   logger.info("Finishing processing dim_currency DataFrame")
-   return dim_currency
-
 #----------formate dim_date_df data frame----------------------#
 def create_df_dim_date(df_fact_sales_order): # get df_fact_sale as argument
    logger.info("Started processing dim_date DataFrame")
