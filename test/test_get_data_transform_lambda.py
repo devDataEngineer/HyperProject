@@ -14,7 +14,6 @@ def aws_creds():
     os.environ["AWS_DEFAULT_REGION"] = "eu-west-2"
 
 BUCKET1 ="team-hyper-accelerated-dragon-bucket-ingestion"
-BUCKET2 = 'Transform_bucket'
 KEY = "TEST_KEY"
 CONTENT = '''[{"id":1,"first_name":"Reinaldo","last_name":"Pinchbeck","email":"rpinchbeck0@alexa.com","gender":"Male","ip_address":"237.188.238.35"},
 {"id":2,"first_name":"Joshuah","last_name":"Reyes","email":"jreyes1@taobao.com","gender":"Male","ip_address":"242.77.75.252"}]'''
@@ -35,18 +34,15 @@ def resource_client(aws_cred):
 def test_get_data_func_get_file_from_ingestion(s3_client):
     s3_client.put_object(Bucket=BUCKET1, Key=f'{KEY}.json', Body=CONTENT)
     result = get_data_from_ingestion_bucket(f's3://team-hyper-accelerated-dragon-bucket-ingestion/{KEY}.json') 
-    result_body = result['Body'].read().decode('utf-8')
-    assert result_body == CONTENT
-    assert result['ResponseMetadata']['HTTPStatusCode'] == 200
+    assert result == CONTENT
 
 def test_get_data_empty_file(s3_client):
     file_path = 'empty_file.json'
-    file_content = b''  # Empty content
+    file_content = ''  # Empty content
     s3_client.put_object(Bucket=BUCKET1, Key=file_path, Body=file_content)
     result = get_data_from_ingestion_bucket(file_path)
-    assert result['Body'].read() == file_content
-    assert result['ContentLength'] == 0
-    assert result['ResponseMetadata']['HTTPStatusCode'] == 200
+    assert result == file_content
+   
 
 def test_get_data_from_ingestion_bucket_lambda_when_bucket_is_empy(s3_client):
     with pytest.raises(ClientError) as excinfo:
