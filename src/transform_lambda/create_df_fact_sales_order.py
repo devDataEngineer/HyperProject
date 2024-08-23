@@ -38,7 +38,4 @@ def create_df_fact_sales_order(df_sales_order):
    except Exception as e:
       logger.error(f"Error occured during formating {fact_sales_order.name}. More info:" + str(e))
       raise e
-
-
-
-
+   

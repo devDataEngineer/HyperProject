@@ -47,5 +47,3 @@ def test_get_data_empty_file(s3_client):
 def test_get_data_from_ingestion_bucket_lambda_when_bucket_is_empy(s3_client):
     with pytest.raises(ClientError) as excinfo:
         get_data_from_ingestion_bucket("file_path")
-
-

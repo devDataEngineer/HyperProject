@@ -8,11 +8,7 @@ import datatest as dt
 import pandas.api.types as ptypes
 from pandas._libs.tslibs.parsing import DateParseError
 
-
-
-
 #-----test for formating fact_sales data frame-------#
-
 def test_fact_sales_order_data_correct_cols():
     colum = { "sales_order_id": "integer",
             "created_at": "datetime",
@@ -81,7 +77,3 @@ def test_fact_sales_order_data_correcrt_data_type():
     with pytest.raises(DateParseError):
         create_df_fact_sales_order(my_mocked_dataframe) 
     
-
-
-
-

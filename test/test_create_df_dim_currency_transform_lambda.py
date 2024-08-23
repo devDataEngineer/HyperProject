@@ -5,8 +5,6 @@ import pandas as pd
 import datatest as dt
 import pandas.api.types as ptypes
 
-
-    
 #-----test for formating dim_currency data frame-------#
 def test_df_dim_currency_have_correct_cols():
     data = {'currency_id':[1,2,3,4],

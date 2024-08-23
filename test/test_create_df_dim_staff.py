@@ -5,8 +5,6 @@ import datatest as dt
 import pandas.api.types as ptypes
 from dfmock import DFMock
 
-
-    
 #-----test for formating dim_currency data frame-------#
 def test_df_dim_staff_have_correct_cols():
     colum = { "staff_id": "integer",
@@ -93,5 +91,3 @@ def test_df_dim_staff_raise_error():
     with pytest.raises(TypeError):
         create_df_dim_staff(df_staff)
  
-    
-    
