@@ -1,3 +1,29 @@
+try:
+    from src.transform_lambda.create_df_fact_sales_order import create_df_fact_sales_order
+    from src.transform_lambda.create_df_dim_staff import create_df_dim_staff
+    from src.transform_lambda.create_df_dim_date import create_df_dim_date
+    from src.transform_lambda.create_df_dim_currency import create_df_dim_currency
+    from src.transformlambda.dim_location import create_dim_location
+    from src.transformlambda.dim_design import create_df_dim_design
+    from src.transformlambda.get_arguments import get_arguments
+    from src.transform_lambda.get_data import get_data_from_ingestion_bucket
+    from src.transformlambda.json_to_panda_func import json_to_panda_df
+    from src.transformlambda.panda_df_to_parq import convert_dataframe_to_parquet
+    from src.transformlambda.upload_to_processed_bucket import upload_to_processed_bucket
+    from src.transformlambda.dim_counterparty import create_df_dim_counterparty
+except:
+    from create_df_fact_sales_order import create_df_fact_sales_order
+    from create_df_dim_staff import create_df_dim_staff
+    from create_df_dim_date import create_df_dim_date
+    from create_df_dim_currency import create_df_dim_currency
+    from dim_location import create_dim_location
+    from dim_design import create_df_dim_design
+    from dim_counterparty import create_df_dim_counterparty
+    from get_arguments import get_arguments
+    from get_data import get_data_from_ingestion_bucket
+    from json_to_panda_func import json_to_panda_df
+    from panda_df_to_parq import convert_dataframe_to_parquet
+    from upload_to_processed_bucket import upload_to_processed_bucket
 
 import pandas as pd
 import logging
@@ -10,157 +36,202 @@ logger.setLevel("INFO")
 #     "currency": "currency/2024/08/20/12-00-00.json"
 # }
 
-# -------------------------------------------------------------------------- #
+do_it = {
+    "counterparty": "counterparty/2024/08/23/13-49-02.json",
+    "currency": "currency/2024/08/23/13-49-02.json",
+    "department": "department/2024/08/23/13-49-02.json",
+    "design": "design/2024/08/23/13-49-02.json",
+    "staff": "staff/2024/08/23/13-49-02.json",
+    "sales_order": "sales_order/2024/08/23/13-49-02.json",
+    "address": "address/2024/08/23/13-49-02.json",
+    # "payment": "payment/2024/08/23/13-49-02.json",
+    # "purchase_order": "purchase_order/2024/08/23/13-49-02.json",
+    # "payment_type": "payment_type/2024/08/23/13-49-02.json",
+    # "transaction": "transaction/2024/08/23/13-49-02.json"
+}
 
-def get_arguments(event) -> dict:
-    """Retrieves passed dictionary from AWS event object
-    """
-    pass
-
-def get_data(filepath: str) -> str:
-    """Retrieves a single file from s3 ingestion bucket
-    Extracts and returns json file data"""
-    pass
-
-def convert_data(data: str) -> pd.DataFrame:
-    """Converts json data into pandas Dataframe
-    Returns that dataframe"""
-    pass
-
-def convert_dataframe_to_parquet(dataframe: pd.DataFrame) -> bytes:
-    """Takes a transformed Dataframe and converts it to parquet format
-    Returns that parquet in the form of bytes
-    """
-    pass
-
-def upload_to_processed_bucket(parquet_file: bytes, filename: str) -> None:
-    """Takes parquet as bytes and a filename
-    Puts parquet into Processed S3 Bucket named as filename"""
-    pass
+    #     'counterparty', 'currency', 'department', 'design',
+    #     'staff', 'sales_order', 'address', 'payment',
+    #     'purchase_order', 'payment_type', 'transaction'
+    #     ]
 
 # -------------------------------------------------------------------------- #
 
-def create_fact_sales_order_df(sales_order: pd.DataFrame) -> pd.DataFrame:
-    """DOCSTRING GOES HERE"""
-    pass
+# def get_arguments(event) -> dict:
+#     """Retrieves passed dictionary from AWS event object
+#     """
+#     pass
 
-def create_dim_staff_df(fact_sales_order: pd.DataFrame, staff: pd.DataFrame, department: pd.DataFrame) -> pd.DataFrame:
-    """DOCSTRING GOES HERE"""
-    pass
+# def get_data(filepath: str) -> str:
+#     """Retrieves a single file from s3 ingestion bucket
+#     Extracts and returns json file data"""
+#     pass
 
-def create_dim_location_df(fact_sales_order: pd.DataFrame, address: pd.DataFrame) -> pd.DataFrame:
-    """DOCSTRING GOES HERE"""
-    pass
+# def json_to_panda_df(data: str) -> pd.DataFrame:
+#     """Converts json data into pandas Dataframe
+#     Returns that dataframe"""
+#     pass
 
-def create_dim_date_df(fact_sales_order: pd.DataFrame) -> pd.DataFrame:
-    """DOCSTRING GOES HERE"""
-    pass
+# def convert_dataframe_to_parquet(dataframe: pd.DataFrame) -> bytes:
+#     """Takes a transformed Dataframe and converts it to parquet format
+#     Returns that parquet in the form of bytes
+#     """
+#     pass
 
-def create_dim_currency_df(fact_sales_order: pd.DataFrame, currency: pd.DataFrame) -> pd.DataFrame:
-    """DOCSTRING GOES HERE"""
-    pass
+# def upload_to_processed_bucket(parquet_file: bytes, filename: str) -> None:
+#     """Takes parquet as bytes and a filename
+#     Puts parquet into Processed S3 Bucket named as filename"""
+#     pass
 
-def create_dim_counterparty_df(fact_sales_order: pd.DataFrame, counterparty: pd.DataFrame, address: pd.DataFrame) -> pd.DataFrame:
-    """DOCSTRING GOES HERE"""
-    pass
+# -------------------------------------------------------------------------- #
+
+# def create_df_fact_sales_order(df_sales_order: pd.DataFrame) -> pd.DataFrame:
+#     """ DOCSTRING GOES HERE"""
+#     pass
+
+# def create_df_dim_staff(df_fact_sales_order: pd.DataFrame, staff: pd.DataFrame, department: pd.DataFrame) -> pd.DataFrame:
+#     """DOCSTRING GOES HERE"""
+#     pass
+
+# def create_df_dim_location(df_fact_sales_order: pd.DataFrame, address: pd.DataFrame) -> pd.DataFrame:
+#     """DOCSTRING GOES HERE"""
+#     pass
+
+# def create_df_dim_date(df_fact_sales_order: pd.DataFrame) -> pd.DataFrame:
+#     """DOCSTRING GOES HERE"""
+#     pass
+
+# def create_df_dim_currency(df_currency: pd.DataFrame) -> pd.DataFrame:
+#     """DOCSTRING GOES HERE"""
+#     pass
+
+# def create_df_dim_counterparty(df_fact_sales_order: pd.DataFrame, counterparty: pd.DataFrame, address: pd.DataFrame) -> pd.DataFrame:
+#     """DOCSTRING GOES HERE"""
+#     pass
 
 # -------------------------------------------------------------------------- #
 
 def lambda_handler(event, context) -> None:
-    """DOCSTRING GOES HERE"""
+    """TRANSFORM"""
 
-    logger.info("Transform Lambda beggining execution")
+    print("Transform Lambda beggining execution")
 
-    logger.info("Retrieving arguments from previous Extract Lambda")
-    tables_with_filepaths = get_arguments()
+    print("Retrieving arguments from previous Extract Lambda")
+    tables_with_filepaths = get_arguments(event)
     tables_with_json_data = {}
 
-    table_list = tables_with_filepaths.keys()
-    logger.info(f"Tables to update: {table_list}")
+    table_list = list(tables_with_filepaths.keys())
+    print(f"Tables to update: {table_list}")
     # table_list = [
     #     'counterparty', 'currency', 'department', 'design',
     #     'staff', 'sales_order', 'address', 'payment',
     #     'purchase_order', 'payment_type', 'transaction'
     #     ]
 
-    logger.info("Retrieving json files from Extract S3 Bucket")
+    print("Retrieving json files from Extract S3 Bucket")
     for table in table_list:
-        logger.info(f"Retrieving {tables_with_filepaths[table]}...")
-        tables_with_json_data[table] = get_data(
+        print(f"Retrieving {tables_with_filepaths[table]}...")
+        tables_with_json_data[table] = get_data_from_ingestion_bucket(
             tables_with_filepaths[table]
             )
-        logger.info(f"{table} file retrieved")
+        print(f"{table} file retrieved")
 
     tables_with_dataframes = {}
 
-    logger.info(f"Converting tables from json to dataframe")
+    print(f"Converting tables from json to dataframe")
     for table in table_list:
-        tables_with_dataframes[table] = convert_data(
+        tables_with_dataframes[table] = json_to_panda_df(
             tables_with_json_data[table]
             )
-        logger.info(f"Table [{table}] converted")
+        print(f"Table [{table}] converted")
 
-    logger.info("Creating fact_sales_order_df")
-    fact_sales_order_df = create_fact_sales_order_df(
-        tables_with_dataframes["sales_order"]
-        )
-    
-    logger.info("Creating dim_staff_df")
-    dim_staff_df = create_dim_staff_df(
-        fact_sales_order_df,
-        tables_with_dataframes["staff"],
-        tables_with_dataframes["department"]
-        )
-    
-    logger.info("Creating dim_location_df")
-    dim_location_df = create_dim_location_df(
-        fact_sales_order_df,
-        tables_with_dataframes["address"]
-        )
-    
-    logger.info("Creating dim_date_df")
-    dim_date_df = create_dim_date_df(fact_sales_order_df)
+    processed_dataframes = {}
+    processed_dataframe_list = []
 
-    logger.info("Creating dim_currency_df")
-    dim_currency_df = create_dim_currency_df(
-        fact_sales_order_df,
-        tables_with_dataframes["currency"]
-        )
+    if "sales_order" in table_list:
+        print("Creating df_fact_sales_order")
+        df_fact_sales_order = create_df_fact_sales_order(
+            tables_with_dataframes["sales_order"]
+            )
+        processed_dataframes["df_fact_sales_order"] = df_fact_sales_order
 
-    logger.info("Creating dim_counterparty_df")
-    dim_counterparty_df = create_dim_counterparty_df(
-        fact_sales_order_df,
-        tables_with_dataframes["counterparty"],
-        tables_with_dataframes["address"]
-    )
+    if "staff" in table_list and "department" in table_list:
+        print("Creating df_dim_staff")
+        df_dim_staff = create_df_dim_staff(
+            tables_with_dataframes["staff"],
+            tables_with_dataframes["department"]
+            )
+        processed_dataframes["df_dim_staff"] = df_dim_staff
     
-    dataframes = {
-        "fact_sales_order": fact_sales_order_df,
-        "dim_staff": dim_staff_df,
-        "dim_location": dim_location_df,
-        "dim_date": dim_date_df,
-        "dim_currency": dim_currency_df,
-        "dim_counterparty": dim_counterparty_df
-    }
-    dataframe_list = dataframes.keys()
+    # if "address" in table_list:
+    #     print("Creating df_dim_location")
+    #     df_dim_location = create_dim_location(
+    #         df_fact_sales_order,
+    #         tables_with_dataframes["address"]
+    #         )
+    #     processed_dataframes["df_dim_location"] = df_dim_location
+    
+    # if "sales_order" in table_list:
+    #     print("Creating df_dim_date")
+    #     df_dim_date = create_df_dim_date(df_fact_sales_order)
+    #     processed_dataframes["df_dim_date"] = df_dim_date
 
+    # if "currency" in table_list:
+    #     print("Creating df_dim_currency")
+    #     df_dim_currency = create_df_dim_currency(
+    #         tables_with_dataframes["currency"]
+    #         )
+    #     processed_dataframes["df_dim_currency"] = df_dim_currency
+        
+    # if "location" in table_list:
+    #     print("Creating df_dim_loaction")
+    #     df_dim_loaction = create_dim_location(
+    #         df_fact_sales_order,
+    #         tables_with_dataframes["location"]
+    #         )
+    #     processed_dataframes["df_dim_loaction"] = df_dim_loaction
+
+    if "counterparty" in table_list and "address" in table_list:
+        print("Creating dim_counterparty_df")
+        df_dim_counterparty = create_df_dim_counterparty(
+            tables_with_dataframes["counterparty"],
+            tables_with_dataframes["address"]
+        )
+        processed_dataframes["df_dim_counterparty"] = df_dim_counterparty
+    
+    # dataframes = {
+    #     "fact_sales_order": df_fact_sales_order,
+    #     "df_dim_staff": df_dim_staff,
+    #     "df_dim_location": df_dim_location,
+    #     "df_dim_date": df_dim_date,
+    #     "df_dim_currency": df_dim_currency,
+    #     "df_dim_counterparty": df_dim_counterparty,
+    #     "df_dim_currency": df_dim_currency,
+    #     "df_dim_loaction": df_dim_loaction
+    # }
+
+    processed_dataframe_list = processed_dataframes.keys()
     dataframe_parquet_filepaths = {}
 
-    logger.info("Converting dataframes to parquet files")
-    for df in dataframe_list:
-        logger.info(f"Converting {df}_df to parquet file")
-        dataframe_parquet_filepaths[df] = convert_dataframe_to_parquet(
-            dataframes[df]
-            )
-        logger.info(f"File created: {dataframe_parquet_filepaths[df]}")
+    print(f"Processed tables: {processed_dataframe_list}")
 
-    logger.info("Uploading parquet files to Processed S3 Bucket")
-    for df in dataframe_list:
-        logger.info(f"Uploading {df}...")
+    print("Converting dataframes to parquet files")
+    for df in processed_dataframe_list:
+        print(f"Converting {df}_df to parquet file")
+        dataframe_parquet_filepaths[df] = convert_dataframe_to_parquet(
+            processed_dataframes[df]
+            )
+        print(f"File created: {dataframe_parquet_filepaths[df]}")
+
+    print("Uploading parquet files to Processed S3 Bucket")
+    for df in processed_dataframe_list:
+        print(f"Uploading {df}...")
         upload_to_processed_bucket(
             dataframe_parquet_filepaths[df],
-            "FILENAME_GOES_HERE"
+            f"FILENAME_GOES_HERE_{df}"
             )
-        logger.info("Upload complete!")
+        print("Upload complete!")
 
-    logger.info("Transform Lambda ended execution")
+    print("Transform Lambda ended execution")
+
+lambda_handler(event=do_it, context=None)
