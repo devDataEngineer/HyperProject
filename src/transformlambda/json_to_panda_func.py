@@ -1,23 +1,25 @@
 import pandas as pd
 import json
+import logging
+from io import StringIO
 
-def json_to_panda_df(json_file_path):
+logger = logging.getLogger()
+logger.setLevel("INFO")
+
+def json_to_panda_df(json_bytes_object): #json object
     
     try:
-        with open(json_file_path, 'r') as file:
-            json_data = json.load(file)
-        panda_df = pd.DataFrame(json_data)
+        panda_df = pd.read_json(StringIO(json_bytes_object))
         
         if panda_df.empty == True:
-            return "The DataFrame is empty."
+            logger.info("The DataFrame is empty.")
         else:
             return panda_df
-    
-    except FileNotFoundError:
-        return "File not found."
-    
-    except json.JSONDecodeError:
-        return "The file is not json."
+        
+    except ValueError:
+        logger.error("The input is not a JSON object.")   
+
+   
     
 
     
