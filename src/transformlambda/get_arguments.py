@@ -15,11 +15,11 @@ def get_arguments(event) -> dict:
     tables_with_filepaths = {}
 
     recieved_tables = event.keys()
+    if len(recieved_tables) == 0:
+        logging.error("Lambda invoked with no tables to transform")
 
     for table in recieved_tables:
         if table in table_list:
             tables_with_filepaths[table] = event[table]
-        else:
-            logging.error("Lambda invoked with no tables to transform")
 
     return tables_with_filepaths
