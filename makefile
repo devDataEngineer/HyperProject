@@ -47,10 +47,11 @@ safety:
 
 ## Install black/flake8 - linter to check files for style issues + fix many problems in place
 
-# flake8: - temporarily commented out as this was being flagged for security vulnerabilities, perhaps we can use black instead?
-# 	$(call execute_in_env, $(PIP) install flake8)
+# Flake8 had been temporarily commented out as this was being flagged for security vulnerabilities, black as possible alternative?
+flake8: 
+ 	$(call execute_in_env, $(PIP) install flake8)
 
-## Install coverage - checks how much of code is tested by our unit and integration tests (90+%)
+## Install coverage - checks how much of code is tested by our unit and integration tests (aiming for 90+%)
 coverage:
 	$(call execute_in_env, $(PIP) install coverage)
 
@@ -66,9 +67,9 @@ security-test:
 	$(call execute_in_env, safety check -r ./requirements.txt)
 	$(call execute_in_env, bandit -lll */*.py *c/*/*.py)
 
-## Run the black/flake8 code check
-# run-flake8:
-# 	$(call execute_in_env, flake8  ./src/*/*.py ./test/*/*.py)
+## Run the flake8 code check
+run-flake8:
+ 	$(call execute_in_env, flake8  ./src/*/*.py ./test/*/*.py)
 
 ## Run the unit tests
 unit-test:
@@ -79,4 +80,7 @@ check-coverage:
 	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} pytest --cov=src test/)
 
 ## Run all checks
-run-checks: security-test unit-test check-coverage # run-flake8
+run-checks: security-test unit-test check-coverage 
+
+## Run linter
+run-linter: run-flake8
