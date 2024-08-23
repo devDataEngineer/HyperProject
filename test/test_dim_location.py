@@ -3,6 +3,7 @@ from datetime import datetime
 import pandas as pd
 import datatest as dt
 import pandas.api.types 
+import pytest
 
 
 def test_create_dim_location_creates_correct_columns():
@@ -130,3 +131,26 @@ def test_create_dim_location_column_values_are_of_the_correct_type():
      assert pd.api.types.is_string_dtype(result['postal_code'].dtype) == True
      assert pd.api.types.is_string_dtype(result['country'].dtype) == True
      assert pd.api.types.is_string_dtype(result['phone'].dtype) == True
+
+
+
+
+def test_creates_dim_location_raises_error():
+    
+    address_data = {
+  'address_id': [1,2],
+  'address_line_1': str, 
+  'address_line_2': str,
+  'district': str,
+  'city': str,
+  'postal_code': str,
+  'country': str,
+  'created_at': datetime.now(),
+  'last_updated': datetime.now()
+}
+    
+    df_address = pd.DataFrame(address_data)
+    
+    df_address = pd.DataFrame(address_data)
+    with pytest.raises(TypeError):
+         create_dim_location(df_address)
