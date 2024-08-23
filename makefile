@@ -80,4 +80,7 @@ check-coverage:
 	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} pytest --cov=src test/)
 
 ## Run all checks
-run-checks: security-test unit-test check-coverage run-flake8
+run-checks: security-test unit-test check-coverage 
+
+## Run linter
+run-linter: run-flake8
