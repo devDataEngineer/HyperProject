@@ -1,0 +1,73 @@
+
+name: Deploy Infrastructure
+
+on:
+  push:
+    branches:
+    - main
+  # pull_request:
+
+
+jobs:
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+    # permissions:
+    #   contents: read
+    env: aws # create variable in GitHub and inside it, store 3 secrets for use in the ubuntu machine
+      AWS_ACCESS_KEY_ID : ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY : ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION : ${{ secrets.AWS_REGION }}
+
+
+    # Use the Bash shell regardless of GitHub Actions runner
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+
+# Now from line 17 
+    # - name: Set AWS credentials # Use GitHub secrets 
+    # run: |
+    # echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} >> $GITHUB_ENV
+    # echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} >> $GITHUB_ENV
+    # echo "AWS_DEFAULT_REGION=${{ secrets.AWS_REGION }} >> $GITHUB_ENV
+    # export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+    # export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY}}
+    # export AWS_DEFAULT_REGION=${{ secrets.AWS_REGION }}
+
+    # Install the latest version of Terraform CLI 
+    - name: Install AWS CLI
+    run: |
+        sudo apt-get update
+        sudo apt-get install -y awscli
+
+        
+    - name: Configure AWS CLI
+    run: aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID && aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY # is this correct?
+    
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.0.0
+
+    # Initialize Terraform directory
+      run: terraform init
+      
+
+    # Checks that all Terraform configuration files adhere to format
+    # - name: Terraform Format
+    #   run: terraform fmt -check
+
+
+    - name: Terraform Plan
+      run: terraform plan -input=false # -out=tfplan should extract the plan output from the speculative run.
+
+   - name: Terraform Apply
+      run: terraform apply -auto-approve -input=false
+
+  # - name: Clean up
+      # run: rm tfplan
