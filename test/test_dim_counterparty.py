@@ -8,13 +8,13 @@ import pytest
 def test_create_df_counterparty_column_validation():
 
     data_address =  {
-  'address_id' : [1,2], 
-  'address_line_1':str,
+  'address_id': [1,2], 
+  'address_line_1': str,
   'address_line_2': str,
-  'district' : str,
+  'district': str,
   'city': str,
-  'postal_code':str,
-  'country' :str,
+  'postal_code': str,
+  'country': str,
   'phone': str,
   'created_at': datetime.now(),
   'last_updated': datetime.now()
@@ -23,13 +23,13 @@ def test_create_df_counterparty_column_validation():
     df_address = pd.DataFrame(data_address)
 
     data_counterparty = {
-  'counterparty_id' : [1,2],
-  'counterparty_legal_name':str,
-  'legal_address_id':[1,2] ,
-  'commercial_contact': str ,
-  'delivery_contact' :str ,
-  'created_at':datetime.now(),
-  'last_updated' : datetime.now(),
+  'counterparty_id': [1,2],
+  'counterparty_legal_name': str,
+  'legal_address_id':[1,2],
+  'commercial_contact': str,
+  'delivery_contact': str,
+  'created_at': datetime.now(),
+  'last_updated': datetime.now()
 }
     df_counterparty = pd.DataFrame(data_counterparty)
 
@@ -45,13 +45,13 @@ def test_create_df_counterparty_column_validation():
 def test_create_df_counterparty_correctly_drops_and_renames_columns():
 
     data_address =  {
-  'address_id' : [1,2], 
-  'address_line_1':str,
+  'address_id': [1,2], 
+  'address_line_1': str,
   'address_line_2': str,
-  'district' : str,
+  'district': str,
   'city': str,
-  'postal_code':str,
-  'country' :str,
+  'postal_code': str,
+  'country': str,
   'phone': str,
   'created_at': datetime.now(),
   'last_updated': datetime.now()
@@ -60,13 +60,13 @@ def test_create_df_counterparty_correctly_drops_and_renames_columns():
     df_address = pd.DataFrame(data_address)
 
     data_counterparty = {
-  'counterparty_id' : [1,2],
-  'counterparty_legal_name':str,
-  'legal_address_id':[1,2] ,
-  'commercial_contact': str ,
-  'delivery_contact' :str ,
-  'created_at':datetime.now(),
-  'last_updated' : datetime.now(),
+  'counterparty_id': [1,2],
+  'counterparty_legal_name': str,
+  'legal_address_id': [1,2],
+  'commercial_contact': str,
+  'delivery_contact': str,
+  'created_at': datetime.now(),
+  'last_updated': datetime.now()
 }
     df_counterparty = pd.DataFrame(data_counterparty)
 
@@ -98,13 +98,13 @@ def test_create_df_counterparty_returns_correct_data_types():
      df_address = pd.DataFrame(data_address)
 
      data_counterparty = {
-  'counterparty_id' : [1,2],
-  'counterparty_legal_name':str,
-  'legal_address_id':[1,2] ,
+  'counterparty_id : [1,2],
+  'counterparty_legal_name': str,
+  'legal_address_id': [1,2] ,
   'commercial_contact': str ,
-  'delivery_contact' :str ,
-  'created_at':datetime.now(),
-  'last_updated' : datetime.now(),
+  'delivery_contact': str ,
+  'created_at': datetime.now(),
+  'last_updated': datetime.now()
 }
      df_counterparty = pd.DataFrame(data_counterparty)
 
@@ -119,13 +119,13 @@ def test_create_df_counterparty_returns_correct_data_types():
     
 def test_create_df_counterparty_raises_error():
      data_counterparty = {
-  'counterparty_id' : [1,2],
-  'counterparty_legal_name':str,
-  'legal_address_id':[1,2] ,
-  'commercial_contact': str ,
-  'delivery_contact' :str ,
+  'counterparty_id': [1,2],
+  'counterparty_legal_name': str,
+  'legal_address_id': [1,2],
+  'commercial_contact': str,
+  'delivery_contact': str,
   'created_at':datetime.now(),
-  'last_updated' : datetime.now(),
+  'last_updated': datetime.now()
 }
      df_counterparty = pd.DataFrame(data_counterparty)
      with pytest.raises( TypeError):
