@@ -33,9 +33,9 @@ def convert_dataframe_to_parquet(dataframe: pd.DataFrame) -> bytes:
     """
     pass
 
-def upload_to_transform_bucket(parquet_file: bytes, filename: str) -> None:
+def upload_to_processed_bucket(parquet_file: bytes, filename: str) -> None:
     """Takes parquet as bytes and a filename
-    Puts parquet into Transform S3 Bucket named as filename"""
+    Puts parquet into Processed S3 Bucket named as filename"""
     pass
 
 # -------------------------------------------------------------------------- #
@@ -157,7 +157,7 @@ def lambda_handler(event, context) -> None:
     logger.info("Uploading parquet files to Processed S3 Bucket")
     for df in dataframe_list:
         logger.info(f"Uploading {df}...")
-        upload_to_transform_bucket(
+        upload_to_processed_bucket(
             dataframe_parquet_filepaths[df],
             "FILENAME_GOES_HERE"
             )
