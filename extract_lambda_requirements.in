@@ -1,4 +1,0 @@
-pytest
-pg8000
-moto
-boto3
