@@ -5,18 +5,6 @@ data "archive_file" "load_layer" {
   output_path      = "${path.module}/../src/load_lambda_func_payload.zip"
 }
 
-resource "aws_lambda_layer_version" "load-layer" {
-  filename      = "${path.module}/../src/load-lambda-layer.zip" 
-  layer_name    = "load_lambda_layer"
-  compatible_runtimes = [var.python_runtime]
-}
-
-#  making .zip file of load lambda python code and store in terraform file
-data "archive_file" "load_layer_zip" {
-  type        = "zip"
-  source_dir = "${path.module}/../src/load-lambda-layer"
-  output_path = "${path.module}/../src/load-lambda-layer.zip"
-}
 
 
 resource "aws_lambda_function" "load_lambda" {
@@ -26,7 +14,7 @@ resource "aws_lambda_function" "load_lambda" {
   handler           = "load.lambda_handler"
   runtime           = var.python_runtime
   source_code_hash  = data.archive_file.load_layer.output_base64sha256
-  layers            = [aws_lambda_layer_version.load-layer.arn]
+  layers            = [aws_lambda_layer_version.lambda-layer.arn]
   depends_on        = [aws_sns_topic.email_notification_load_lambda]
   environment {
     variables   = {
@@ -82,9 +70,7 @@ data "aws_iam_policy_document" "s3_data_policy_load_lambda" {
         "s3:GetObject",
         "s3:ListBucket"
     ]
-    resources = [
-      "${aws_s3_bucket.processed-bucket.arn}/*"
-       ]
+    resources = ["${aws_s3_bucket.processed-bucket.arn}/*"]
   }
 }
 
@@ -119,7 +105,6 @@ resource "aws_iam_role_policy_attachment" "load_lambda_cw_policy_attachment" {
   policy_arn = aws_iam_policy.load_cw_policy.arn
 
 }
-
 
 ################################################################################
 # SNS (email) configuration for the third lambda

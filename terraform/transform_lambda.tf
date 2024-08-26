@@ -1,22 +1,10 @@
 #  making .zip file of transform lambda python code and store in terraform file
 data "archive_file" "transform_layer" {
   type             = "zip"
-  source_file       = "${path.module}/../src/transform.py"
+  source_dir       = "${path.module}/../src/transformlambda"
   output_path      = "${path.module}/../src/transform_lambda_func_payload.zip"
 }
 
-resource "aws_lambda_layer_version" "transform-layer" {
-  filename      = "${path.module}/../src/transform-lambda-layer.zip" 
-  layer_name    = "transform_lambda_layer"
-  compatible_runtimes = [var.python_runtime]
-}
-
-#  making .zip file of transform lambda python code and store in terraform file
-data "archive_file" "transform_layer_zip" {
-  type        = "zip"
-  source_dir = "${path.module}/../src/transform-lambda-layer"
-  output_path = "${path.module}/../src/transform-lambda-layer.zip"
-}
 
 
 resource "aws_lambda_function" "transform_lambda" {
@@ -26,13 +14,12 @@ resource "aws_lambda_function" "transform_lambda" {
   handler           = "transform.lambda_handler"
   runtime           = var.python_runtime
   source_code_hash  = data.archive_file.transform_layer.output_base64sha256
-  layers            = [aws_lambda_layer_version.transform-layer.arn]
+  layers            = [aws_lambda_layer_version.lambda-layer.arn]
   depends_on        = [aws_sns_topic.email_notification_transform_lambda]
   environment {
     variables   = {
       TOPIC_ARN = aws_sns_topic.email_notification_transform_lambda.arn,
        # get sns topic arn and assing to env variable TOPIC_ARN
-      SSMParameterName = var.ssm_parameter_name # sets SSM parameter name 
     }
   }
   timeout = 120 
@@ -50,8 +37,6 @@ resource "aws_lambda_permission" "transform_sns_publish" {
     principal     = "sns.amazonaws.com"
     source_arn    = aws_sns_topic.email_notification_transform_lambda.arn
 }
-
-
 
 data "aws_iam_policy_document" "transform_lambda_trust_policy" {
 statement {
@@ -129,35 +114,6 @@ resource "aws_iam_role_policy_attachment" "transform_lambda_cw_policy_attachment
   policy_arn = aws_iam_policy.transform_cw_policy.arn
 
 }
-
-
-
-# resource "aws_s3_bucket" "processed-bucket" {
-#   bucket = "${var.bucket_prefix}-processed"
-
-#     tags = {
-#         Name  = "processed data bucket for loading into warehouse"
-    
-#   }
-# }
-
-# resource "aws_s3_bucket_notification" "processed-bucket-notification" {
-#   bucket = aws_s3_bucket.processed-bucket.id
-#   eventbridge = true
-
-#   lambda_function {
-      
-#     lambda_function_arn = aws_lambda_function.transform_lambda.arn # change to transform
-#     events              = ["s3:ObjectCreated:*"]
-#   }
-
-#   depends_on = [aws_lambda_permission.allow_bucket]
-#  }  #are we still using this?
-
- # Transform Lambda IAM Policy for S3 Write - I am assuming this
- # will at some point be needed to add to the processed bucket?
-
-
 
 ################################################################################
 # SNS (email) configuration for the second lambda
