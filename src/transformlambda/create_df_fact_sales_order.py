@@ -1,6 +1,3 @@
-import json
-import boto3
-import boto3.exceptions
 import pandas as pd
 import numpy as np
 import logging

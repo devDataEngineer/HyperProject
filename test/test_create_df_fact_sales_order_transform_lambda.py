@@ -1,4 +1,4 @@
-from src.transform_lambda.create_df_fact_sales_order import create_df_fact_sales_order
+from src.transformlambda.create_df_fact_sales_order import create_df_fact_sales_order
 import pytest
 import boto3
 from dfmock import DFMock

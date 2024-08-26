@@ -1,4 +1,4 @@
-from src.transformlambda.dim_design import create_df_dim_design
+from src.transformlambda.create_df_dim_design import create_df_dim_design
 
 
 

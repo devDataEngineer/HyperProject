@@ -1,4 +1,4 @@
-from src.transform_lambda.create_df_dim_staff import create_df_dim_staff
+from src.transformlambda.create_df_dim_staff import create_df_dim_staff
 import pytest
 import pandas as pd
 import datatest as dt

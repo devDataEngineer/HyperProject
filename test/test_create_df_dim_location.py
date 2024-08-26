@@ -1,8 +1,7 @@
-from src.transformlambda.dim_location import create_dim_location
+from src.transformlambda.create_df_dim_location import create_dim_location
 from datetime import datetime
 import pandas as pd
 import datatest as dt
-import pandas.api.types 
 import pytest
 
 
