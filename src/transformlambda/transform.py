@@ -1,24 +1,24 @@
 try:
-    from src.transform_lambda.create_df_fact_sales_order import create_df_fact_sales_order
-    from src.transform_lambda.create_df_dim_staff import create_df_dim_staff
-    from src.transform_lambda.create_df_dim_date import create_df_dim_date
-    from src.transform_lambda.create_df_dim_currency import create_df_dim_currency
-    from src.transformlambda.dim_location import create_dim_location
-    from src.transformlambda.dim_design import create_df_dim_design
+    from src.transformlambda.create_df_fact_sales_order import create_df_fact_sales_order
+    from src.transformlambda.create_df_dim_staff import create_df_dim_staff
+    from src.transformlambda.create_df_dim_date import create_df_dim_date
+    from src.transformlambda.create_df_dim_currency import create_df_dim_currency
+    from src.transformlambda.create_df_dim_location import create_dim_location
+    from src.transformlambda.create_df_dim_design import create_df_dim_design
     from src.transformlambda.get_arguments import get_arguments
-    from src.transform_lambda.get_data import get_data_from_ingestion_bucket
+    from src.transformlambda.get_data import get_data_from_ingestion_bucket
     from src.transformlambda.json_to_panda_func import json_to_panda_df
     from src.transformlambda.panda_df_to_parq import convert_dataframe_to_parquet
     from src.transformlambda.upload_to_processed_bucket import upload_to_processed_bucket
-    from src.transformlambda.dim_counterparty import create_df_dim_counterparty
+    from src.transformlambda.create_df_dim_counterparty import create_df_dim_counterparty
 except:
     from create_df_fact_sales_order import create_df_fact_sales_order
     from create_df_dim_staff import create_df_dim_staff
     from create_df_dim_date import create_df_dim_date
     from create_df_dim_currency import create_df_dim_currency
-    from dim_location import create_dim_location
-    from dim_design import create_df_dim_design
-    from dim_counterparty import create_df_dim_counterparty
+    from create_df_dim_location import create_dim_location
+    from create_df_dim_design import create_df_dim_design
+    from create_df_dim_counterparty import create_df_dim_counterparty
     from get_arguments import get_arguments
     from get_data import get_data_from_ingestion_bucket
     from json_to_panda_func import json_to_panda_df
