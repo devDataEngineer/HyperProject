@@ -4,7 +4,7 @@ import logging
 logger = logging.getLogger()
 logger.setLevel("INFO")
 
-def create_df_dim_counterparty(df_counterparty,df_address):
+def create_df_dim_counterparty(df_counterparty: pd.DataFrame, df_address: pd.DataFrame) -> pd.DataFrame:
     try: 
         logger.info("Started processing counterparty DataFrame")
         dim_counterparty = df_counterparty

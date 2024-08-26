@@ -1,10 +1,11 @@
+import pandas as pd
 import logging
 
 logger = logging.getLogger()
 logger.setLevel("INFO")
 
 #----------formate dim_currency data frame----------------------#
-def create_df_dim_currency(df_currency):
+def create_df_dim_currency(df_currency: pd.DataFrame) -> pd.DataFrame:
     try:
         logger.info("Started processing dim_currency DataFrame")
         dim_currency = df_currency.copy()
@@ -21,5 +22,5 @@ def create_df_dim_currency(df_currency):
         logger.info("Finishing processing dim_currency DataFrame")
         return dim_currency
     except Exception as e:
-        logger.error(f"Error occured during formating {dim_currency.name}. More info:" + str(e))
+        logger.error(f"Error occured during formating {dim_currency}. More info:" + str(e))
         raise e

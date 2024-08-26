@@ -5,7 +5,7 @@ logger = logging.getLogger()
 logger.setLevel("INFO")
 
 #----------formate dim_date_df data frame----------------------#
-def create_df_dim_date(df_fact_sales_order): # get df_fact_sale as argument
+def create_df_dim_date(df_fact_sales_order: pd.DataFrame) -> pd.DataFrame: # get df_fact_sale as argument
     try:
         logger.info("Started processing dim_date DataFrame")
 

@@ -4,8 +4,7 @@ import logging
 logger = logging.getLogger()
 logger.setLevel("INFO")
 
-def create_df_dim_design(df_design):
-    
+def create_df_dim_design(df_design: pd.DataFrame) -> pd.DataFrame:
     try:
         logger.info("Started processing dim_date DataFrame")
         dim_design = df_design

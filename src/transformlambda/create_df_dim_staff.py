@@ -6,7 +6,7 @@ logger.setLevel("INFO")
 
 #sales_record_id [SERIAL], created_date
 #----------formate dim_date_df data frame----------------------#
-def create_df_dim_staff(df_staff, df_department):
+def create_df_dim_staff(df_staff: pd.DataFrame, df_department: pd.DataFrame) -> pd.DataFrame:
     try:
         logger.info("Started processing fact_sales DataFrame")
         dim_department = df_department

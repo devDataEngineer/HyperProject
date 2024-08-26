@@ -1,9 +1,9 @@
+import pandas as pd
 import logging
 logger = logging.getLogger()
 logger.setLevel("INFO")
 
-def create_dim_location(df_fact_sales_order, df_dim_address):
-    
+def create_dim_location(df_fact_sales_order: pd.DataFrame, df_dim_address: pd.DataFrame) -> pd.DataFrame:
     try : 
         logger.info("Started processing dim_location DataFrame")
         dim_location = df_dim_address
