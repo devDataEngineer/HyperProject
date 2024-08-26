@@ -1,6 +1,6 @@
 from src.transformlambda.json_to_panda_func import json_to_panda_df
 import pandas as pd
-from src.transform_lambda.get_data import get_data_from_ingestion_bucket
+from src.transformlambda.get_data import get_data_from_ingestion_bucket
 import pytest
 import boto3
 import os

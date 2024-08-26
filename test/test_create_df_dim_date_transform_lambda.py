@@ -1,4 +1,4 @@
-from src.transform_lambda.create_df_dim_date import create_df_dim_date
+from src.transformlambda.create_df_dim_date import create_df_dim_date
 import pytest
 from datetime import datetime
 import pandas as pd

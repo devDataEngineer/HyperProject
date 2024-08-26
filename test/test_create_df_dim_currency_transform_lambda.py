@@ -1,4 +1,4 @@
-from src.transform_lambda.create_df_dim_currency import create_df_dim_currency
+from src.transformlambda.create_df_dim_currency import create_df_dim_currency
 import pytest
 from datetime import datetime
 import pandas as pd

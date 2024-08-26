@@ -1,7 +1,7 @@
 import pandas as pd
 from src.transformlambda.json_to_panda_func import json_to_panda_df
-from transformlambda.convert_df_to_pq_bytes import convert_dataframe_to_parquet_bytes
-from src.transform_lambda.get_data import get_data_from_ingestion_bucket
+from src.transformlambda.convert_df_to_pq_bytes import convert_dataframe_to_parquet_bytes
+from src.transformlambda.get_data import get_data_from_ingestion_bucket
 from io import BytesIO
 import pytest
 import boto3

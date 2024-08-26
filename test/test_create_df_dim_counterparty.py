@@ -1,4 +1,4 @@
-from src.transformlambda.dim_counterparty import create_df_dim_counterparty
+from src.transformlambda.create_df_dim_counterparty import create_df_dim_counterparty
 from datetime import datetime
 import pandas as pd
 import datatest as dt
@@ -98,7 +98,7 @@ def test_create_df_counterparty_returns_correct_data_types():
      df_address = pd.DataFrame(data_address)
 
      data_counterparty = {
-  'counterparty_id : [1,2],
+  'counterparty_id': [1,2],
   'counterparty_legal_name': str,
   'legal_address_id': [1,2] ,
   'commercial_contact': str ,
