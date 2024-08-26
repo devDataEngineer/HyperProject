@@ -15,10 +15,10 @@ def create_df_fact_sales_order(df_sales_order):
       logger.info("Started processing fact_sales DataFrame")
       fact_sales_order = df_sales_order
       fact_sales_order.name = 'fact_sales_order'
-      fact_sales_order['created_at'] = pd.to_datetime(fact_sales_order['created_at'])
+      fact_sales_order['created_at'] = pd.to_datetime(fact_sales_order['created_at'], format='mixed')
       fact_sales_order['created_date'] = fact_sales_order['created_at'].dt.date
       fact_sales_order['created_time'] = fact_sales_order['created_at'].dt.time
-      fact_sales_order['last_updated'] = pd.to_datetime(fact_sales_order['last_updated'])
+      fact_sales_order['last_updated'] = pd.to_datetime(fact_sales_order['last_updated'], format='mixed')
       fact_sales_order['last_updated_date'] = fact_sales_order['last_updated'].dt.date     
       fact_sales_order['last_updated_time'] = fact_sales_order['last_updated'].dt.time
       fact_sales_order = fact_sales_order.drop(columns=[ 'created_at', 'last_updated'])

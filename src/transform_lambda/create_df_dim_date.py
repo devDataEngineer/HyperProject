@@ -25,6 +25,6 @@ def create_df_dim_date(df_fact_sales_order): # get df_fact_sale as argument
         logger.info("Finishing processing dim_date DataFrame")
         return dim_date
    except Exception as e:
-        logger.error(f"Error occured during formating {dim_date.name}. More info:" + str(e))
+        logger.error(f"Error occured during formating {dim_date}. More info:" + str(e))
         raise e
    
