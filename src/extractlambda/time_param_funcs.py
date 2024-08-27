@@ -31,5 +31,6 @@ def update_time_param() -> tuple[datetime, datetime]:
     
     except ClientError as e:
         logger.error(f"An error occurred: {e}")
+        raise
         
     return current_time, previous_time
