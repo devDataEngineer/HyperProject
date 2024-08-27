@@ -7,7 +7,7 @@ logger.setLevel("INFO")
 
 #sales_record_id [SERIAL], created_date
 #----------formate dim_date_df data frame----------------------#
-def create_df_fact_sales_order(df_sales_order):
+def create_df_fact_sales_order(df_sales_order: pd.DataFrame) -> pd.DataFrame:
    try: 
       logger.info("Started processing fact_sales DataFrame")
       fact_sales_order = df_sales_order

@@ -25,27 +25,11 @@ except:
     from panda_df_to_parq import convert_dataframe_to_parquet
     from upload_to_processed_bucket import upload_to_processed_bucket
 
-import pandas as pd
 import logging
 
 logger = logging.getLogger()
 logger.setLevel("INFO")
 
-# event = {
-#     "counterparty": "counterparty/2024/08/26/10-36-18.json",
-#     "currency": "currency/2024/08/26/10-36-18.json",
-#     "department": "department/2024/08/26/10-36-18.json",
-#     "design": "design/2024/08/26/10-36-18.json",
-#     "staff": "staff/2024/08/26/10-36-18.json",
-#     "sales_order": "sales_order/2024/08/26/10-36-18.json",
-#     "address": "address/2024/08/26/10-36-18.json",
-#     "payment": "payment/2024/08/26/10-36-18.json",
-#     "purchase_order": "purchase_order/2024/08/26/10-36-18.json",
-#     "payment_type": "payment_type/2024/08/26/10-36-18.json",
-#     "transaction": "transaction/2024/08/26/10-36-18.json"
-# }
-
-# -------------------------------------------------------------------------- #
 
 def lambda_handler(event, context) -> None:
     """TRANSFORM"""
