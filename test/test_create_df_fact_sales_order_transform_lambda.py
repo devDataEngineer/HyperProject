@@ -57,7 +57,7 @@ def test_fact_sales_order_data_correcrt_data_type():
     assert ptypes.is_datetime64_dtype(result['agreed_payment_date']) == True
 
 
-def test_fact_sales_order_data_correcrt_data_type():
+def test_fact_sales_order_data_correcrt_data_type_raise_error():
     colum = { "sales_order_id": "integer",
             "created_at": "string",
             "last_updated": "datetime",

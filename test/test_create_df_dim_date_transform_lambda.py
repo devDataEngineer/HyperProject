@@ -4,7 +4,7 @@ from datetime import datetime
 import pandas as pd
 import datatest as dt
 import pandas.api.types as ptypes
-
+from pandas._libs.tslibs.parsing import DateParseError
 
 #-----test for formating dim_date data frame-------#
 def test_df_dim_date_has_correct_cos():
@@ -34,6 +34,6 @@ def test_df_dim_date_raise_error():
         'name': "abcde"
     }
     df = pd.DataFrame(data)
-    with pytest.raises(AttributeError):
+    with pytest.raises(DateParseError):
         create_df_dim_date(df)
 
