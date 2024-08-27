@@ -79,7 +79,6 @@ def load_table(
             default=str
             ).encode('UTF-8')
 
-
         logger.info(f"Loading table {table_name} into ingestion bucket")
         s3.put_object(
             Body=json_bytes,

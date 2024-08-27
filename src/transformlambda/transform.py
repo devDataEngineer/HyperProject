@@ -25,14 +25,36 @@ except:
     from convert_df_to_pq_bytes import convert_dataframe_to_parquet_bytes
     from upload_to_processed_bucket import upload_to_processed_bucket
 
+import boto3
+from datetime import datetime
+from botocore.exceptions import ClientError
 import logging
 
 logger = logging.getLogger()
 logger.setLevel("INFO")
 
 
+def get_time():
+    client = boto3.client('ssm')
+    try:
+        response = client.get_parameter(Name = 'dragons_time_param')
+        return datetime.strptime(
+            response['Parameter']['Value'],
+            '%Y-%m-%d %H:%M:%S.%f'
+            )
+    
+    except ClientError as e:
+        logger.error(f"An error occurred: {e}")
+        raise
+
+def get_filename(table_name, current_time: datetime) -> str:
+    return f"{table_name}/{current_time.strftime('%Y/%m/%d/%H-%M-%S')}.json"
+
 def lambda_handler(event, context) -> None:
     """TRANSFORM"""
+
+    current_time = get_time()
+    timestamp = current_time.strftime('%Y/%m/%d/%H-%M-%S')
 
     logger.info("Transform Lambda beggining execution")
 
@@ -123,7 +145,7 @@ def lambda_handler(event, context) -> None:
         )
         processed_dataframes["df_dim_counterparty"] = df_dim_counterparty
 
-    processed_dataframe_list = processed_dataframes.keys()
+    processed_dataframe_list = list(processed_dataframes.keys())
     dataframe_parquet_filepaths = {}
 
     logger.info(f"Processed tables: {processed_dataframe_list}")
@@ -140,8 +162,14 @@ def lambda_handler(event, context) -> None:
         logger.info(f"Uploading {df}...")
         upload_to_processed_bucket(
             dataframe_parquet_filepaths[df],
-            f"{df}.pq"
+            f"{df}/{timestamp}.pq"
             )
         logger.info("Upload complete!")
 
     logger.info("Transform Lambda ended execution")
+
+    pq_with_filepaths = {}
+    for df in processed_dataframe_list:
+        pq_with_filepaths[df] = f"{df}/{timestamp}.pq"
+
+    return pq_with_filepaths
