@@ -15,8 +15,8 @@ def update_time_param() -> tuple[datetime, datetime]:
     current_time = datetime.now()
     previous_time = datetime(1990, 1, 1, 0, 0, 0, 111111)
 
+    client = boto3.client('ssm')
     try:
-        client = boto3.client('ssm')
         response = client.get_parameter(Name = 'dragons_time_param')
         previous_time = datetime.strptime(
             response['Parameter']['Value'],
@@ -29,7 +29,7 @@ def update_time_param() -> tuple[datetime, datetime]:
                 Overwrite = True
                 )
     
-    except ClientError as e: 
+    except ClientError as e:
         logger.error(f"An error occurred: {e}")
         raise
         
