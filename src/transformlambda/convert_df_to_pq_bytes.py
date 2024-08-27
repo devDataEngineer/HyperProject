@@ -13,5 +13,7 @@ def convert_dataframe_to_parquet_bytes(input_df: pd.DataFrame) -> bytes:
             return pq_bytes
         else:
             logger.error("Please input a Panda Dataframe.")
-    except:
-        logger.error("Df failed to conversion to parquet.")
+    except Exception as e:
+        logger.error("Df failed to convert to parquet.")
+        logger.error(f"Error: {e}")
+        return e
