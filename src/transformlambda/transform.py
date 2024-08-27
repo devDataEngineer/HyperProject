@@ -100,7 +100,7 @@ def lambda_handler(event, context) -> None:
             )
         processed_dataframes["df_dim_currency"] = df_dim_currency
         
-    if "address" in table_list:
+    if "address" in table_list and "sales_order" in table_list:
         logger.info("Creating df_dim_loaction")
         df_dim_loaction = create_dim_location(
             df_fact_sales_order,
