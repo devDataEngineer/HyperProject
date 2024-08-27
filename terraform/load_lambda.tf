@@ -199,6 +199,13 @@ resource "aws_iam_role_policy_attachment" "load_lambda_sm_policy_attachment" {
 
 }
 
+resource "aws_iam_role_policy_attachment" "load_lambda_ssm_policy_attachment" {
+  role       = aws_iam_role.iam_for_load_lambda.name
+  policy_arn = aws_iam_policy.ssm_policy.arn
+
+}
+
+
 # Possibly not needed anymore because we are going to be using PG8000
 # data "aws_iam_policy_document" "rds_policy_load_lambda" {
 #   statement {

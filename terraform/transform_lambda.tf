@@ -22,7 +22,8 @@ resource "aws_lambda_function" "transform_lambda" {
        # get sns topic arn and assing to env variable TOPIC_ARN
     }
   }
-  timeout = 120 
+  timeout = 180
+  memory_size = 256
 }
 
 resource "aws_cloudwatch_log_group" "transform_lambda_cw_group"{
@@ -190,4 +191,10 @@ data "aws_iam_policy_document" "sns_topic_policy_transform_lambda" {
         ]
         sid = "__default_statement_ID"
     }
+}
+
+resource "aws_iam_role_policy_attachment" "transform_lambda_ssm_policy_attachment" {
+  role       = aws_iam_role.iam_for_transform_lambda.name
+  policy_arn = aws_iam_policy.ssm_policy.arn
+
 }
