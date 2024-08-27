@@ -3,7 +3,7 @@ from src.extractlambda.connection import close_db_connection, db_connection
 import pytest
 import os
 from moto import mock_aws
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 import boto3
 from datetime import datetime
 from pg8000 import DatabaseError
@@ -25,11 +25,11 @@ def s3_client(aws_creds):
         s3_client = boto3.client("s3")
         yield s3_client
 
-# @pytest.fixture
-# def secretsmanager_client(aws_creds):
-#     with mock_aws():
-#         sm_client = boto3.client("secretsmanager")
-#         yield sm_client
+@pytest.fixture
+def ssm_client(aws_creds):
+    with mock_aws():
+        sm_client = boto3.client("ssm")
+        yield sm_client
 
 # @pytest.fixture
 # def resource_client(aws_creds):
@@ -83,9 +83,17 @@ def test_load_all_tables_returns_dict(s3_client):
             assert isinstance(load_all_tables(date_to_compare, date_to_compare2), dict)
 
 
-def test_lambda_handler_returns_dict(s3_client):
+def test_lambda_handler_returns_dict(s3_client, ssm_client):
     with patch ("src.extractlambda.extract.load_all_tables") as p:
         p.return_value = {
             'counterparty': "link", 'currency': "link", 'department': "link"
                             }
+        bucket_name = 'team-hyper-accelerated-dragon-bucket-ingestion'
+        # s3_client.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={'LocationConstraint': 'eu-west-2'})
+        ssm_client.put_parameter(
+            Name = 'dragons_time_param',
+            Value = str(datetime(2000,1,1,0,0,0,111111)),
+            Type = 'String',
+            Overwrite = True
+            )
         assert isinstance(lambda_handler("", ""), dict)
