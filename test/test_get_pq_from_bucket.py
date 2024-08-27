@@ -1,4 +1,4 @@
-from src.loadlambda.get_pq_from_bucket import get_pq_from_bucket
+from src.loadlambda.test_2 import get_pq_from_bucket
 import pytest
 import pandas as pd
 import boto3
@@ -7,13 +7,12 @@ from moto import mock_aws
 import io
 
 
-
 @pytest.fixture
 def mock_s3_resource():
     with mock_aws():
         yield boto3.resource('s3')
 
-def test_get_pq_from_bucket_success(mock_s3_resource, mocker):
+def test_get_pq_from_bucket_reads_the_parquet_file(mock_s3_resource, mocker):
     
     bucket_name = 'fake-bucket'
     key = 'fake-file.parquet'
@@ -29,28 +28,24 @@ def test_get_pq_from_bucket_success(mock_s3_resource, mocker):
     s3_object = s3.Object(bucket_name, key)
     s3_object.put(Body=parquet_buffer.getvalue())
     
-   
     mocker.patch('pandas.read_parquet', return_value=mock_df)
     
-  
     result = get_pq_from_bucket(bucket_name, key)
     
-  
     assert isinstance(result, pd.DataFrame)
     assert result is (mock_df)    
 
 
-def test_get_pq_from_bucket_error(mocker):
-    
+def test_get_pq_from_bucket_results_in_error_when_incorrect_bucket_name_passed(mocker):
     mock_s3_client = mocker.Mock()
     mock_s3_client.get_object.side_effect = ClientError(
         {'Error': {'Code': 'NoSuchBucket', 'Message': 'The specified bucket does not exist'}},
         'GetObject'
     )
     mocker.patch('boto3.client', return_value=mock_s3_client)
-    
     # Call the function
-    result = get_pq_from_bucket('non-existent-bucket', 'non-existent-key')
+    with pytest.raises(ClientError):
+        result = get_pq_from_bucket('non-existent-bucket', 'non-existent-key')
     
-    # Assert the result
-    assert result is None
+    # # Assert the result
+    # assert result is None
