@@ -1,7 +1,7 @@
 #  making .zip file of load lambda python code and store in terraform file
 data "archive_file" "load_layer" {
   type             = "zip"
-  source_file       = "${path.module}/../src/load.py"
+  source_dir       = "${path.module}/../src/loadlambda"
   output_path      = "${path.module}/../src/load_lambda_func_payload.zip"
 }
 

@@ -19,6 +19,7 @@ def upload_to_processed_bucket(pq_bytes, filename:str):
             logger.error("Failed to upload PQ Bytes to processed bucket!")
     
     except Exception as e:
+        logger.error(f"Error: {e}")
         return e
 
 

@@ -8,7 +8,7 @@ try:
     from src.transformlambda.get_arguments import get_arguments
     from src.transformlambda.get_data import get_data_from_ingestion_bucket
     from src.transformlambda.json_to_panda_func import json_to_panda_df
-    from src.transformlambda.panda_df_to_parq import convert_dataframe_to_parquet
+    from src.transformlambda.convert_df_to_pq_bytes import convert_dataframe_to_parquet_bytes
     from src.transformlambda.upload_to_processed_bucket import upload_to_processed_bucket
     from src.transformlambda.create_df_dim_counterparty import create_df_dim_counterparty
 except:
@@ -22,7 +22,7 @@ except:
     from get_arguments import get_arguments
     from get_data import get_data_from_ingestion_bucket
     from json_to_panda_func import json_to_panda_df
-    from panda_df_to_parq import convert_dataframe_to_parquet
+    from convert_df_to_pq_bytes import convert_dataframe_to_parquet_bytes
     from upload_to_processed_bucket import upload_to_processed_bucket
 
 import logging
@@ -100,7 +100,7 @@ def lambda_handler(event, context) -> None:
             )
         processed_dataframes["df_dim_currency"] = df_dim_currency
         
-    if "address" in table_list:
+    if "address" in table_list and "sales_order" in table_list:
         logger.info("Creating df_dim_loaction")
         df_dim_loaction = create_dim_location(
             df_fact_sales_order,
@@ -113,7 +113,7 @@ def lambda_handler(event, context) -> None:
         df_dim_design = create_df_dim_design(
             tables_with_dataframes["design"]
             )
-        processed_dataframes["df_dim_loaction"] = df_dim_loaction
+        processed_dataframes["df_dim_design"] = df_dim_design
 
     if "counterparty" in table_list and "address" in table_list:
         logger.info("Creating dim_counterparty_df")
@@ -131,7 +131,7 @@ def lambda_handler(event, context) -> None:
     logger.info("Converting dataframes to parquet files")
     for df in processed_dataframe_list:
         logger.info(f"Converting {df}_df to parquet file")
-        dataframe_parquet_filepaths[df] = convert_dataframe_to_parquet(
+        dataframe_parquet_filepaths[df] = convert_dataframe_to_parquet_bytes(
             processed_dataframes[df]
             )
 
