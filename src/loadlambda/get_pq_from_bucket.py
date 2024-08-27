@@ -15,7 +15,6 @@ def get_pq_from_bucket(bucket_name, key):
     s3_client = boto3.client('s3')
 
     try:
-        
         response = s3_client.get_object(Bucket=bucket_name, Key=key)
         parquet_data = response['Body'].read()
         
