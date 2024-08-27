@@ -42,6 +42,6 @@ def test_df_dim_currency_raise_error():
         'last_updated':[datetime.now(),datetime.now(),datetime.now(),datetime.now()]
                        }
     df = pd.DataFrame(data)
-    with pytest.raises(AttributeError):
+    with pytest.raises(KeyError):
         create_df_dim_currency(df)
     
