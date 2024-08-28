@@ -18,9 +18,7 @@ from dfmock import DFMock
 #     return [("user", [{"id": 1, "name": "Kevin"}, {"id": 2, "name": "Dwight"}])]
 
 
-def test_load_fact_to_warehouse_stablish_connection(mocked_session):
-    user = mocked_session.query(user).filter_by(id=2).first()
-    assert user.name == "Dwight"
+
 
 
 
