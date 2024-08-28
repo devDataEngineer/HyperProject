@@ -1,6 +1,6 @@
 resource "aws_cloudwatch_log_group" "state_machine_log_group" {
     name = "/aws/lambda/${var.lambda_name}-state-machine"
-    retention_in_days = 7 # CHANGE?
+    retention_in_days = 7
     }
 
 # To start the execution of a state machine from a schedule
