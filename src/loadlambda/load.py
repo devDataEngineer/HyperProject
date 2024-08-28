@@ -1,6 +1,8 @@
+from src.loadlambda.get_pq_from_bucket import get_pq_from_bucket
+
 import pandas as pd
 import logging
-import logging
+
 logger = logging.getLogger()
 logger.setLevel("INFO")
 
@@ -24,17 +26,17 @@ def get_arguments(event) -> dict:
     return dfs_with_filepaths
 
 
-def get_pq_from_bucket() -> bytes:
-    # can mostly copy get_data_from_ingestion_bucket
-    # uses connection.py
-    # db_secret needs changing
-    # can copy paste some code for bucket
-    pass
+# def get_pq_from_bucket() -> bytes:
+#     # can mostly copy get_data_from_ingestion_bucket
+#     # uses connection.py
+#     # db_secret needs changing
+#     # can copy paste some code for bucket
+#     pass
 
 def pq_to_df(parquet: bytes) -> pd.DataFrame:
     # pandas method
     # pandas.read_parquet
-    pass
+    return pd.read_parquet(bytes)
 
 def load_fact_to_warehouse(fact_table: pd.DataFrame) -> None:
     """
@@ -71,41 +73,25 @@ def lambda_handler(event, context):
 
     logger.info(f"Processing parquet files")
     for table in table_list:
+        logger.info(f"Retrieving: {table}")
         tables_with_pq[table] = get_pq_from_bucket(tables_with_filenames[table])
         tables_with_df[table] = pq_to_df(tables_with_pq[table])
         logger.info(f"{table} successfully retrieved and converted to dataframe")
 
+    fact_sales_order = None
+
     if "fact_sales_order" in table_list:
-        table_list.remove("fact_sales_order")
-        logger.info(f"Handing fact_sales_order upload")
-        load_fact_to_warehouse(tables_with_df["fact_sales_order"])
-        logger.info(f"Upload of fact_sales_order complete!")
+        table_list.remove("df_fact_sales_order")
+        fact_sales_order = tables_with_df["fact_sales_order"]
 
     for table in table_list:
         logger.info(f"Uploading {table}...")
         load_dim_to_warehouse(tables_with_df[table])
         logger.info(f"Upload of {table} complete!")
-                    
+
+    if fact_sales_order:
+        logger.info("Uploading fact_sales_order...")
+        load_fact_to_warehouse(fact_sales_order)
+        logger.info(f"Upload of fact_sales_order complete!")
+
         logger.info("End of Load lambda execution")
-
-    
-
-
-
-
-
-
-# This is a temporary lambda function to check SNS and Cloud watch services
-# client = boto3.client('sns')
-         
-# def lambda_handler(event, context):
-#    try:  
-#       message = "This is from the test load lambda"
-#       topic_arn = os.environ.get('TOPIC_ARN')
-#       one = "One"
-#       two = 2
-#       total = sum(one, two)
-#       return total
-#    except TypeError:
-      
-#       client.publish(TopicArn=topic_arn,Message=message)

@@ -47,9 +47,6 @@ def get_time():
         logger.error(f"An error occurred: {e}")
         raise
 
-def get_filename(table_name, current_time: datetime) -> str:
-    return f"{table_name}/{current_time.strftime('%Y/%m/%d/%H-%M-%S')}.json"
-
 def lambda_handler(event, context) -> None:
     """TRANSFORM"""
 
@@ -123,8 +120,8 @@ def lambda_handler(event, context) -> None:
         processed_dataframes["dim_currency"] = df_dim_currency
         
     if "address" in table_list and "sales_order" in table_list:
-        logger.info("Creating df_dim_loaction")
-        df_dim_loaction = create_dim_location(
+        logger.info("Creating df_dim_location")
+        df_dim_location = create_dim_location(
             df_fact_sales_order,
             tables_with_dataframes["address"]
             )
