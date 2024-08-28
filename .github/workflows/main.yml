@@ -39,8 +39,7 @@ jobs:
           make run-linter
         continue-on-error: true # Keeps the workflow from failing even if the linting step doesn't succeed
 
-  deploy-infrstructure:
-
+  deploy-infrastructure:
     name: Terraform
     needs: run-tests
     runs-on: ubuntu-latest
