@@ -53,7 +53,7 @@ flake8:
 
 ## Install coverage - checks how much of code is tested by our unit and integration tests (aiming for 90+%)
 coverage:
-	$(call execute_in_env, $(PIP) install coverage)
+	$(call execute_in_env, $(PIP) install pytest-cov)
 
 ## Set up dev requirements (bandit, safety, flake8)
 dev-setup: bandit coverage flake8 #safety
@@ -77,10 +77,10 @@ unit-test:
 
 ## Run the coverage check
 check-coverage:
-	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} pytest --cov=src test/)
+	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} pytest --cov)
 
 ## Run all checks
-run-checks: security-test check-coverage # unit-test 
+run-checks: security-test check-coverage unit-test 
 
 ## Run linter
 run-linter: run-flake8
