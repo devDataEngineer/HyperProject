@@ -68,14 +68,14 @@ jobs:
       - name: Configure AWS CLI
         run: aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID && aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY # may not be correct
     
-    # Initialises Terraform directory
-
+    # Install selected Terraform version
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.0.0
+        uses: hashicorp/setup-terraform@v3
+        
+    # Initialize Terraform directory 
+      - name: Setup Terraform
         run: terraform init
-      
+  
       - name: Terraform Plan
         run: terraform plan -input=false # -out=tfplan to extract the plan output if needed
 
