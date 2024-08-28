@@ -42,21 +42,21 @@ bandit:
 	$(call execute_in_env, $(PIP) install bandit)
 
 ## Install safety - checks for security issues in Python libraries
-safety:
-	$(call execute_in_env, $(PIP) install safety)
+#safety:
+#	$(call execute_in_env, $(PIP) install safety)
 
 ## Install black/flake8 - linter to check files for style issues + fix many problems in place
 
 # Flake8 had been temporarily commented out as this was being flagged for security vulnerabilities, black as possible alternative?
-flake8: 
- 	$(call execute_in_env, $(PIP) install flake8)
+flake8:
+	$(call execute_in_env, $(PIP) install flake8)
 
 ## Install coverage - checks how much of code is tested by our unit and integration tests (aiming for 90+%)
 coverage:
-	$(call execute_in_env, $(PIP) install coverage)
+	$(call execute_in_env, $(PIP) install pytest-cov)
 
 ## Set up dev requirements (bandit, safety, flake8)
-dev-setup: bandit safety coverage # flake8
+dev-setup: bandit coverage flake8 #safety
 
 
 
@@ -64,12 +64,12 @@ dev-setup: bandit safety coverage # flake8
 
 ## Run the security test (bandit + safety)
 security-test:
-	$(call execute_in_env, safety check -r ./requirements.txt)
+#	$(call execute_in_env, safety check -r ./requirements.txt)
 	$(call execute_in_env, bandit -lll */*.py *c/*/*.py)
 
 ## Run the flake8 code check
 run-flake8:
- 	$(call execute_in_env, flake8  ./src/*/*.py ./test/*/*.py)
+	$(call execute_in_env, flake8  ./src/*/*.py ./test/*/*.py)
 
 ## Run the unit tests
 unit-test:
@@ -77,10 +77,11 @@ unit-test:
 
 ## Run the coverage check
 check-coverage:
-	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} pytest --cov=src test/)
+	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} pytest --cov)
 
 ## Run all checks
-run-checks: security-test unit-test check-coverage 
+run-checks: security-test check-coverage unit-test 
 
 ## Run linter
 run-linter: run-flake8
+

@@ -47,9 +47,6 @@ def get_time():
         logger.error(f"An error occurred: {e}")
         raise
 
-def get_filename(table_name, current_time: datetime) -> str:
-    return f"{table_name}/{current_time.strftime('%Y/%m/%d/%H-%M-%S')}.json"
-
 def lambda_handler(event, context) -> None:
     """TRANSFORM"""
 
@@ -90,7 +87,7 @@ def lambda_handler(event, context) -> None:
         df_fact_sales_order = create_df_fact_sales_order(
             tables_with_dataframes["sales_order"]
             )
-        processed_dataframes["df_fact_sales_order"] = df_fact_sales_order
+        processed_dataframes["fact_sales_order"] = df_fact_sales_order
 
     if "staff" in table_list and "department" in table_list:
         logger.info("Creating df_dim_staff")
@@ -98,7 +95,7 @@ def lambda_handler(event, context) -> None:
             tables_with_dataframes["staff"],
             tables_with_dataframes["department"]
             )
-        processed_dataframes["df_dim_staff"] = df_dim_staff
+        processed_dataframes["dim_staff"] = df_dim_staff
     
     if "address" in table_list:
         logger.info("Creating df_dim_location")
@@ -106,36 +103,36 @@ def lambda_handler(event, context) -> None:
             df_fact_sales_order,
             tables_with_dataframes["address"]
             )
-        processed_dataframes["df_dim_location"] = df_dim_location
+        processed_dataframes["dim_location"] = df_dim_location
     
     if "sales_order" in table_list:
         logger.info("Creating df_dim_date")
         df_dim_date = create_df_dim_date(
             df_fact_sales_order
             )
-        processed_dataframes["df_dim_date"] = df_dim_date
+        processed_dataframes["dim_date"] = df_dim_date
 
     if "currency" in table_list:
         logger.info("Creating df_dim_currency")
         df_dim_currency = create_df_dim_currency(
             tables_with_dataframes["currency"]
             )
-        processed_dataframes["df_dim_currency"] = df_dim_currency
+        processed_dataframes["dim_currency"] = df_dim_currency
         
     if "address" in table_list and "sales_order" in table_list:
-        logger.info("Creating df_dim_loaction")
-        df_dim_loaction = create_dim_location(
+        logger.info("Creating df_dim_location")
+        df_dim_location = create_dim_location(
             df_fact_sales_order,
             tables_with_dataframes["address"]
             )
-        processed_dataframes["df_dim_loaction"] = df_dim_loaction
+        processed_dataframes["dim_location"] = df_dim_location
 
     if "design" in table_list:
         logger.info("Creating df_dim_design")
         df_dim_design = create_df_dim_design(
             tables_with_dataframes["design"]
             )
-        processed_dataframes["df_dim_design"] = df_dim_design
+        processed_dataframes["dim_design"] = df_dim_design
 
     if "counterparty" in table_list and "address" in table_list:
         logger.info("Creating dim_counterparty_df")
@@ -143,7 +140,7 @@ def lambda_handler(event, context) -> None:
             tables_with_dataframes["counterparty"],
             tables_with_dataframes["address"]
         )
-        processed_dataframes["df_dim_counterparty"] = df_dim_counterparty
+        processed_dataframes["dim_counterparty"] = df_dim_counterparty
 
     processed_dataframe_list = list(processed_dataframes.keys())
     dataframe_parquet_filepaths = {}
