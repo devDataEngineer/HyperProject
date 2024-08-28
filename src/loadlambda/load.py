@@ -1,6 +1,16 @@
-from src.loadlambda.get_pq_from_bucket import get_pq_from_bucket
+try:
+    from src.loadlambda.get_pq_from_bucket import get_pq_from_bucket
+    from src.loadlambda.load_dim_date import load_dim_date_to_warehouse
+    from src.loadlambda.load_dim_design import load_dim_design_to_warehouse
+    from src.loadlambda.load_dim_location import load_dim_location_to_warehouse
+    from src.loadlambda.load_fact_to_warehouse import load_fact_to_warehouse
+except:
+    from get_pq_from_bucket import get_pq_from_bucket
+    from load_dim_date import load_dim_date_to_warehouse
+    from load_dim_design import load_dim_design_to_warehouse
+    from load_dim_location import load_dim_location_to_warehouse
+    from load_fact_to_warehouse import load_fact_to_warehouse
 
-import pandas as pd
 import logging
 
 logger = logging.getLogger()
@@ -26,39 +36,6 @@ def get_arguments(event) -> dict:
     return dfs_with_filepaths
 
 
-# def get_pq_from_bucket() -> bytes:
-#     # can mostly copy get_data_from_ingestion_bucket
-#     # uses connection.py
-#     # db_secret needs changing
-#     # can copy paste some code for bucket
-#     pass
-
-def pq_to_df(parquet: bytes) -> pd.DataFrame:
-    # pandas method
-    # pandas.read_parquet
-    return pd.read_parquet(bytes)
-
-def load_fact_to_warehouse(fact_table: pd.DataFrame) -> None:
-    """
-    Your warehouse should contain a full history of all updates to facts.
-    For example, if a sales order is created in totesys and then later updated
-    (perhaps the units_sold field is changed),
-    you should have two records in the fact_sales_order table.
-    It should be possible to see both the original and changed number of units_sold.
-    It should be possible to query either the current state of the sale,
-    or get a full history of how it has evolved (including deletion if applicable).
-    """
-    pass
-
-def load_dim_to_warehouse(dim_table: pd.DataFrame) -> None:
-    """
-    It is not necessary to do this for dimensions (which should not change very much anyway).
-    The warehouse should just have the latest version of the dimension values.
-    However, you might want to keep a full record of changes to dimensions in the S3 buckets.
-    """
-    pass
-
-
 def lambda_handler(event, context):
     logger.info("Load lambda beginning execution")
 
@@ -68,30 +45,30 @@ def lambda_handler(event, context):
     table_list = list(tables_with_filenames.keys())
     logger.info(f"To be updated: {table_list}")
 
-    tables_with_pq = {}
     tables_with_df = {}
 
     logger.info(f"Processing parquet files")
     for table in table_list:
         logger.info(f"Retrieving: {table}")
-        tables_with_pq[table] = get_pq_from_bucket(tables_with_filenames[table])
-        tables_with_df[table] = pq_to_df(tables_with_pq[table])
+        tables_with_df[table] = get_pq_from_bucket(tables_with_filenames[table])
         logger.info(f"{table} successfully retrieved and converted to dataframe")
-
-    fact_sales_order = None
-
-    if "fact_sales_order" in table_list:
-        table_list.remove("df_fact_sales_order")
-        fact_sales_order = tables_with_df["fact_sales_order"]
 
     for table in table_list:
         logger.info(f"Uploading {table}...")
-        load_dim_to_warehouse(tables_with_df[table])
+        match table:
+            case "dim_date":
+                load_dim_date_to_warehouse(tables_with_df[table])
+            case "dim_design":
+                load_dim_design_to_warehouse(tables_with_df[table])
+            case "dim_location":
+                load_dim_location_to_warehouse(tables_with_df[table])
+            case _:
+                pass
         logger.info(f"Upload of {table} complete!")
 
-    if fact_sales_order:
+    if "fact_sales_order" in table_list:
         logger.info("Uploading fact_sales_order...")
-        load_fact_to_warehouse(fact_sales_order)
+        load_fact_to_warehouse(tables_with_df["fact_sales_order"])
         logger.info(f"Upload of fact_sales_order complete!")
 
         logger.info("End of Load lambda execution")
