@@ -1,17 +1,22 @@
-from src.loadlambda.load_warehouse_connection import warehouse_connection
+try:
+    from src.loadlambda.load_warehouse_connection import warehouse_connection
+except:
+    from load_warehouse_connection import warehouse_connection
+
 import logging
+
 
 logger = logging.getLogger()
 logger.setLevel("INFO")
 
-def load_dim_date_to_warehouse(dim_date_df, table_name):
+def load_dim_date_to_warehouse(dim_date_df):
     conn = warehouse_connection()
     cur = conn.cursor()
     logger.info(f"Started processing {dim_date_df} DataFrame to warehouse")
     try:
         for _, row in dim_date_df.iterrows():
             cur.execute(
-                f"""INSERT INTO {table_name} (
+                f"""INSERT INTO dim_date (
                 "date_id",
                 "year",
                 "month",

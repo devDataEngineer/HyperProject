@@ -27,7 +27,7 @@ def test_load_dim_date_to_warehouse_func_is_called_correctly(mock_warehouse_conn
     mock_conn.cursor.return_value = mock_cursor
 
      # Act
-    result = load_dim_date_to_warehouse(test_df, "dim_date")
+    result = load_dim_date_to_warehouse(test_df)
 
     # Assert 
     mock_conn.commit.assert_called_once()
