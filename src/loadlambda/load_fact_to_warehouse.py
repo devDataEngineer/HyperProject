@@ -1,35 +1,34 @@
+try:
+    from src.loadlambda.load_warehouse_connection import warehouse_connection
+except:
+    from load_warehouse_connection import warehouse_connection
+    
 import pandas as pd
-import psycopg2
-from sqlalchemy import create_engine, text
-from src.loadlambda.load_warehouse_connection import warehouse_connection
 
-
-
-
-# from src.loadlambda.load_warehouse_connection  import warehouse_connection as conn
-def load_fact_to_warehouse(fact_df, table_name):
+def load_fact_to_warehouse(fact_df):
     conn = warehouse_connection()
     
     cursor = conn.cursor()
 
     for _, row in fact_df.iterrows():
         cursor.execute(
-            f"""INSERT INTO {table_name} ("sales_record_id",
-            "sales_order_id",
-            "created_date",
-            "created_time",
-            "last_updated_date",
-            "last_updated_time",
-            "sales_staff_id",
-            "counterparty_id",
-            "units_sold",
-            "unit_price",
-            "currency_id",
-            "design_id",
-            "agreed_payment_date",
-            "agreed_delivery_date",
-            "agreed_delivery_location_id") 
-                    VALUES (%s, %s, %s, %s, %s,%s, %s, %s, %s, %s,%s, %s, %s, %s, %s)""",
+            """INSERT INTO fact_sales_order (
+                "sales_record_id",
+                "sales_order_id",
+                "created_date",
+                "created_time",
+                "last_updated_date",
+                "last_updated_time",
+                "sales_staff_id",
+                "counterparty_id",
+                "units_sold",
+                "unit_price",
+                "currency_id",
+                "design_id",
+                "agreed_payment_date",
+                "agreed_delivery_date",
+                "agreed_delivery_location_id") 
+                VALUES (%s, %s, %s, %s, %s,%s, %s, %s, %s, %s,%s, %s, %s, %s, %s)""",
             (
             row['sales_record_id'],row['sales_order_id'],row['created_date'],row['created_time'], 
             row['last_updated_date'], row['last_updated_time'],row['sales_staff_id'],row['counterparty_id'],
