@@ -128,7 +128,7 @@ def lambda_handler(event, context) -> None:
             df_fact_sales_order,
             tables_with_dataframes["address"]
             )
-        processed_dataframes["dim_loaction"] = df_dim_loaction
+        processed_dataframes["dim_location"] = df_dim_location
 
     if "design" in table_list:
         logger.info("Creating df_dim_design")
