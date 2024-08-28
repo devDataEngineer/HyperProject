@@ -1,7 +1,6 @@
 import pandas as pd
 import boto3
 import logging
-# import pyarrow.parquet as pq
 from botocore.exceptions import ClientError
 import io
 
@@ -25,4 +24,3 @@ def get_pq_from_bucket(key):
     except ClientError as e:
         logger.error(f"Error accessing S3 Processed bucket: {str(e)}")
         raise
-

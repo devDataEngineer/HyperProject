@@ -16,16 +16,17 @@ def load_dim_date_to_warehouse(dim_date_df, table_name="dim_date"):
         logger.info(f"Started processing {dim_date_df} DataFrame to warehouse")
         for _, row in dim_date_df.iterrows():
             cur.execute(
-                f"""INSERT INTO {table_name} (
-                "date_id",
-                "year",
-                "month",
-                "day",
-                "day_of_week",
-                "day_name",
-                "month_name",
-                "quarter") 
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
+                """INSERT INTO dim_date (
+                    date_id,
+                    year,
+                    month,
+                    day,
+                    day_of_week,
+                    day_name,
+                    month_name,
+                    quarter") 
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (date_id) DO NOTHING;""",
                 (
                 row['date_id'],row['year'],row['month'],row['day'], 
                 row['day_of_week'], row['day_name'],row['month_name'],row['quarter'])

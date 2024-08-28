@@ -2,6 +2,7 @@ import boto3
 from botocore.exceptions import ClientError
 import json
 
+
 def get_warehouse_secret(name_secret="Data_Warehouse_Credentials"):
 
     secret_name = name_secret
@@ -22,5 +23,3 @@ def get_warehouse_secret(name_secret="Data_Warehouse_Credentials"):
         return warehouse_secret 
     except ClientError as e:
         raise e
-    
-

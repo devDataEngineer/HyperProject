@@ -1,5 +1,9 @@
+try:
+    from src.loadlambda.load_secrets import get_warehouse_secret
+except:
+    from load_secrets import get_warehouse_secret
+
 import pg8000.dbapi
-from src.loadlambda.load_secrets import get_warehouse_secret
 
 def warehouse_connection():
     secrets = get_warehouse_secret()
@@ -10,8 +14,6 @@ def warehouse_connection():
             host=secrets["host"],
             port=int(secrets["port"])
             )
-
-
     return conn
         
 def close_warehouse_connection(conn):
