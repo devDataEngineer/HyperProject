@@ -48,8 +48,8 @@ safety:
 ## Install black/flake8 - linter to check files for style issues + fix many problems in place
 
 # Flake8 had been temporarily commented out as this was being flagged for security vulnerabilities, black as possible alternative?
-flake8: 
- 	$(call execute_in_env, $(PIP) install flake8)
+flake8:
+	$(call execute_in_env, $(PIP) install flake8)
 
 ## Install coverage - checks how much of code is tested by our unit and integration tests (aiming for 90+%)
 coverage:
