@@ -56,7 +56,7 @@ coverage:
 	$(call execute_in_env, $(PIP) install coverage)
 
 ## Set up dev requirements (bandit, safety, flake8)
-dev-setup: bandit coverage # flake8 #safety
+dev-setup: bandit coverage flake8 #safety
 
 
 
