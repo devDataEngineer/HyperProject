@@ -59,12 +59,7 @@ jobs:
         shell: bash
 
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-
-
-    # Installs the latest version of Terraform CLI 
-      - name: Install AWS CLI
+      - name: Install AWS CLI     # Installs the latest version of Terraform CLI 
         run: |
           sudo apt-get update
           sudo apt-get install -y awscli
