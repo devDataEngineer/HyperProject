@@ -31,3 +31,4 @@ def test_load_dim_date_to_warehouse_func_is_called_correctly(mock_warehouse_conn
 
     # Assert 
     mock_conn.commit.assert_called_once()
+

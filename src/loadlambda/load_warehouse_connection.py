@@ -11,7 +11,6 @@ def warehouse_connection():
             port=int(secrets["port"])
             )
 
-    # conn.run(f'SET search_path TO {secrets["username"]}')
 
     return conn
         
