@@ -39,8 +39,7 @@ jobs:
           make run-linter
         continue-on-error: true # Keeps the workflow from failing even if the linting step doesn't succeed
 
-  deploy-infrstructure:
-
+  deploy-infrastructure:
     name: Terraform
     needs: run-tests
     runs-on: ubuntu-latest
@@ -60,12 +59,7 @@ jobs:
         shell: bash
 
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-
-
-    # Installs the latest version of Terraform CLI 
-      - name: Install AWS CLI
+      - name: Install AWS CLI     # Installs the latest version of Terraform CLI 
         run: |
           sudo apt-get update
           sudo apt-get install -y awscli
