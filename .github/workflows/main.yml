@@ -1,0 +1,86 @@
+
+name: team-hyper-accelerated-dragon CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # for manual triggering - to be removed later?
+
+jobs:
+  run-tests:
+  
+    name: run-tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        
+      - name: Set Up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          
+      - name: Install Requirements/Dependencies
+        run: 
+          make requirements
+
+      - name: Install Dev Requirements # Installs bandit, safety, coverage, flake8
+        run: 
+          make dev-setup 
+          
+      - name: Run Checks # Runs security, runs unit tests, checks coverage 
+        run:
+          make run-checks
+
+      - name: Lint with Flake8
+        run:
+          make run-linter
+        continue-on-error: true # Keeps the workflow from failing even if the linting step doesn't succeed
+
+  deploy-infrastructure:
+    name: Terraform
+    needs: run-tests
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      
+    env:
+      AWS_ACCESS_KEY_ID : ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY : ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION : ${{ secrets.AWS_REGION }}
+
+
+    # Uses Bash shell regardless of GitHub Actions runner
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Install AWS CLI     # Installs the latest version of Terraform CLI 
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y awscli
+
+  
+      - name: Configure AWS CLI
+        run: aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID && aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY # may not be correct
+    
+    # Install selected Terraform version
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        
+    # Initialize Terraform directory 
+      - name: Setup Terraform
+        run: terraform init
+  
+      - name: Terraform Plan
+        run: terraform plan -input=false # -out=tfplan to extract the plan output if needed
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -input=false
+
+      # - name: Clean up 
+      # run: rm tfplan

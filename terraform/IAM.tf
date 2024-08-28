@@ -1,4 +1,3 @@
-
 # Lambda IAM Role
 data "aws_iam_policy_document" "extract_lambda_trust_policy" {
 statement {
@@ -111,7 +110,65 @@ resource "aws_iam_role_policy_attachment" "secret_manager_policy_attachment" {
 
 }
 
+# Create new IAM Policy and Role for EventBridge Scheduler
+resource "aws_iam_policy" "eventbridge_stepfunctions_policy" {
+  name        = "eventbridge_stepfunctions_policy"
+  description = "Policy for EventBridge Scheduler to trigger Step Functions"
 
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "states:StartExecution"
+        ],
+        Effect   = "Allow"
+        Resource = "${aws_sfn_state_machine.step_function_state_machine.arn}"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role" "eventbridge_scheduler_iam_role" {
+  name_prefix         = "eb-scheduler-role-"
+  managed_policy_arns = [aws_iam_policy.eventbridge_stepfunctions_policy.arn]
+  path = "/"
+  assume_role_policy  = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "scheduler.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+EOF
+}
+
+# Create new IAM Policy and Role for Step Function 
+
+resource "aws_iam_role" "sfn_iam_role" {
+  name = "sfn-iam-role"
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess"]
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "states.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+}
 
 
 
