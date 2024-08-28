@@ -20,7 +20,7 @@ def load_dim_design_to_warehouse(dim_design_df):
                     design_id,
                     design_name,
                     file_location,
-                    file_name,
+                    file_name
                     ) 
                     VALUES (%s, %s, %s, %s)
                     ON CONFLICT (design_id) DO NOTHING;""",
