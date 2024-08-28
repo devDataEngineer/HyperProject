@@ -47,9 +47,6 @@ def get_time():
         logger.error(f"An error occurred: {e}")
         raise
 
-def get_filename(table_name, current_time: datetime) -> str:
-    return f"{table_name}/{current_time.strftime('%Y/%m/%d/%H-%M-%S')}.json"
-
 def lambda_handler(event, context) -> None:
     """TRANSFORM"""
 
