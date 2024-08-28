@@ -14,7 +14,7 @@ def mock_s3_resource():
 
 def test_get_pq_from_bucket_reads_the_parquet_file(mock_s3_resource, mocker):
     
-    bucket_name = 'fake-bucket'
+    bucket_name = 'team-hyper-accelerated-dragon-bucket-processed'
     key = 'fake-file.parquet'
     
     s3 = mock_s3_resource
@@ -30,22 +30,22 @@ def test_get_pq_from_bucket_reads_the_parquet_file(mock_s3_resource, mocker):
     
     mocker.patch('pandas.read_parquet', return_value=mock_df)
     
-    result = get_pq_from_bucket(bucket_name, key)
+    result = get_pq_from_bucket(key)
     
     assert isinstance(result, pd.DataFrame)
     assert result is (mock_df)    
 
 
-def test_get_pq_from_bucket_results_in_error_when_incorrect_bucket_name_passed(mocker):
+def test_get_pq_from_bucket_results_in_error_when_key_does_not_exist(mocker):
     mock_s3_client = mocker.Mock()
     mock_s3_client.get_object.side_effect = ClientError(
-        {'Error': {'Code': 'NoSuchBucket', 'Message': 'The specified bucket does not exist'}},
+        {'Error': {'Code': 'NoSuchKey', 'Message': 'The specified object does not exist'}},
         'GetObject'
     )
     mocker.patch('boto3.client', return_value=mock_s3_client)
     # Call the function
     with pytest.raises(ClientError):
-        result = get_pq_from_bucket('non-existent-bucket', 'non-existent-key')
+        result = get_pq_from_bucket('non-existent-key')
     
     # # Assert the result
     # assert result is None
