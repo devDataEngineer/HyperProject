@@ -1,4 +1,4 @@
-from src.loadlambda.test_2 import get_pq_from_bucket
+from src.loadlambda.get_pq_from_bucket import get_pq_from_bucket
 import pytest
 import pandas as pd
 import boto3
