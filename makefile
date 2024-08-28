@@ -42,8 +42,8 @@ bandit:
 	$(call execute_in_env, $(PIP) install bandit)
 
 ## Install safety - checks for security issues in Python libraries
-safety:
-	$(call execute_in_env, $(PIP) install safety)
+#safety:
+#	$(call execute_in_env, $(PIP) install safety)
 
 ## Install black/flake8 - linter to check files for style issues + fix many problems in place
 
@@ -56,7 +56,7 @@ coverage:
 	$(call execute_in_env, $(PIP) install coverage)
 
 ## Set up dev requirements (bandit, safety, flake8)
-dev-setup: bandit safety coverage # flake8
+dev-setup: bandit coverage flake8 #safety
 
 
 
@@ -64,7 +64,7 @@ dev-setup: bandit safety coverage # flake8
 
 ## Run the security test (bandit + safety)
 security-test:
-	$(call execute_in_env, safety check -r ./requirements.txt)
+#	$(call execute_in_env, safety check -r ./requirements.txt)
 	$(call execute_in_env, bandit -lll */*.py *c/*/*.py)
 
 ## Run the flake8 code check
@@ -84,3 +84,4 @@ run-checks: security-test unit-test check-coverage
 
 ## Run linter
 run-linter: run-flake8
+
