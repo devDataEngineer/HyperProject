@@ -4,7 +4,7 @@ import logging
 logger = logging.getLogger()
 logger.setLevel("INFO")
 
-def load_dim_counterparty_to_warehouse(dim_counterpary_df, table_name):
+def load_dim_counterparty_to_warehouse(dim_counterpary_df, table_name="dim_counterparty"):
     conn = warehouse_connection()
     cur = conn.cursor()
     logger.info(f"Started processing {dim_counterpary_df} DataFrame to warehouse")

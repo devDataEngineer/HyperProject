@@ -6,7 +6,7 @@ logger.setLevel("INFO")
 
 
 # from src.loadlambda.load_warehouse_connection  import warehouse_connection as conn
-def load_fact_to_warehouse(fact_df, table_name):
+def load_fact_sales_to_warehouse(fact_df, table_name="fact_sales_order"):
     conn = warehouse_connection()
     cursor = conn.cursor()
     logger.info(f"Started processing {fact_df} DataFrame to warehouse")
