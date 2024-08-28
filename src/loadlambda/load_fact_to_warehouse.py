@@ -14,7 +14,8 @@ def load_fact_to_warehouse(fact_df, table_name):
     try:
         for _, row in fact_df.iterrows():
             cursor.execute(
-                f"""INSERT INTO {table_name} ("sales_record_id",
+                f"""INSERT INTO {table_name} (
+                "sales_record_id",
                 "sales_order_id",
                 "created_date",
                 "created_time",
