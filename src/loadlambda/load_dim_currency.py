@@ -4,20 +4,20 @@ import logging
 logger = logging.getLogger()
 logger.setLevel("INFO")
 
-def load_dim_currency_to_warehouse(dim_currency_df, table_name="dim_currency"):
+def load_dim_currency_to_warehouse(dim_currency_df):
     conn = warehouse_connection()
     cur = conn.cursor()
-    logger.info(f"Started processing {dim_currency_df} DataFrame to warehouse")
+    logger.info(f"Started processing dim_currency_df DataFrame to warehouse")
     try:
         for _, row in dim_currency_df.iterrows():
             cur.execute(
-                f"""INSERT INTO {table_name} (
+                """INSERT INTO dim_currency (
                 "currency_id",
                 "currency_code",
-                "currency_name",) 
+                "currency_name") 
                 VALUES (%s, %s, %s)""",
                 (
-                row['currency_code'],
+                row['currency_id'],
                 row['currency_code'],row['currency_name'], 
                 )
             )

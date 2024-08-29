@@ -1,21 +1,26 @@
-from src.loadlambda.load_warehouse_connection import warehouse_connection
+try:
+    from src.loadlambda.load_warehouse_connection import warehouse_connection
+except:
+    from load_warehouse_connection import warehouse_connection
+    
 import logging
 
 logger = logging.getLogger()
 logger.setLevel("INFO")
 
-def load_dim_staff_to_warehouse(dim_staff_df, table_name="dim_staff"):
+def load_dim_staff_to_warehouse(dim_staff_df):
     conn = warehouse_connection()
     cur = conn.cursor()
-    logger.info(f"Started processing {dim_staff_df} DataFrame to warehouse")
+    logger.info(f"Started processing dim_staff_df DataFrame to warehouse")
     try:
         for _, row in dim_staff_df.iterrows():
             cur.execute(
-                f"""INSERT INTO {table_name} (
+                """INSERT INTO dim_staff (
                 "staff_id", "first_name", "last_name", 
                 "department_name", "location",
                 "email_address") 
-                VALUES (%s, %s, %s,%s, %s, %s)""",
+                VALUES (%s, %s, %s,%s, %s, %s)
+                ON CONFLICT (staff_id) DO NOTHING;""",
                 (
                 row['staff_id'],row['first_name'],row['last_name'], 
                 row['department_name'],row['location'],row['email_address']
