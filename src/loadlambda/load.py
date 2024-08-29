@@ -19,6 +19,9 @@ except:
     
 
 import logging
+import os
+from botocore.exceptions import ClientError
+import boto3
 
 logger = logging.getLogger()
 logger.setLevel("INFO")
@@ -44,42 +47,63 @@ def get_arguments(event) -> dict:
 
 
 def lambda_handler(event, context):
-    logger.info("Load lambda beginning execution")
+        
+    try:
+        
+        logger.info("Load lambda beginning execution")
 
-    logger.info("Retrieving arguments from Transform lambda")
-    tables_with_filenames = get_arguments(event) # returns dict
+        logger.info("Retrieving arguments from Transform lambda")
+        tables_with_filenames = get_arguments(event) # returns dict
 
-    table_list = list(tables_with_filenames.keys())
-    logger.info(f"To be updated: {table_list}")
+        table_list = list(tables_with_filenames.keys())
+        logger.info(f"To be updated: {table_list}")
 
-    tables_with_df = {}
+        tables_with_df = {}
 
-    logger.info(f"Processing parquet files")
-    for table in table_list:
-        logger.info(f"Retrieving: {table}")
-        tables_with_df[table] = get_pq_from_bucket(tables_with_filenames[table])
-        logger.info(f"{table} successfully retrieved and converted to dataframe")
+        logger.info(f"Processing parquet files")
+        for table in table_list:
+            logger.info(f"Retrieving: {table}")
+            tables_with_df[table] = get_pq_from_bucket(tables_with_filenames[table])
+            logger.info(f"{table} successfully retrieved and converted to dataframe")
 
-    for table in table_list:
-        logger.info(f"Uploading {table}...")
-        match table:
-            case "dim_date":
-                load_dim_date_to_warehouse(tables_with_df[table])
-            case "dim_design":
-                load_dim_design_to_warehouse(tables_with_df[table])
-            case "dim_location":
-                load_dim_location_to_warehouse(tables_with_df[table])
-            case "dim_staff":
-                load_dim_staff_to_warehouse(tables_with_df[table])
-            case "dim_currency":
-                load_dim_currency_to_warehouse(tables_with_df[table])
-            case "dim_counterparty":
-                load_dim_counterparty_to_warehouse(tables_with_df[table])
-        logger.info(f"Upload of {table} complete!")
+        for table in table_list:
+            logger.info(f"Uploading {table}...")
+            match table:
+                case "dim_date":
+                    load_dim_date_to_warehouse(tables_with_df[table])
+                case "dim_design":
+                    load_dim_design_to_warehouse(tables_with_df[table])
+                case "dim_location":
+                    load_dim_location_to_warehouse(tables_with_df[table])
+                case "dim_staff":
+                    load_dim_staff_to_warehouse(tables_with_df[table])
+                case "dim_currency":
+                    load_dim_currency_to_warehouse(tables_with_df[table])
+                case "dim_counterparty":
+                    load_dim_counterparty_to_warehouse(tables_with_df[table])
+            logger.info(f"Upload of {table} complete!")
 
-    if "fact_sales_order" in table_list:
-        logger.info("Uploading fact_sales_order...")
-        load_fact_sales_to_warehouse(tables_with_df["fact_sales_order"])
-        logger.info(f"Upload of fact_sales_order complete!")
+        if "fact_sales_order" in table_list:
+            logger.info("Uploading fact_sales_order...")
+            load_fact_sales_to_warehouse(tables_with_df["fact_sales_order"])
+            logger.info(f"Upload of fact_sales_order complete!")
 
-        logger.info("End of Load lambda execution")
+            logger.info("End of Load lambda execution")
+
+    except ClientError as e:
+        
+        logger.error("Load lambda failed to load data to the Warehouse")
+        topic_arn = os.environ.get('TOPIC_ARN')
+        client = boto3.client('sns')  
+        client.publish(
+            TopicArn = topic_arn,
+            Message = f"""Error Summary:
+                Function Name: Load Lambda
+                Region: eu-west-2
+                Error Message: Load lambda failed to load data to the Warehouse
+                Detailed Logs: {str(e)}
+                Next Steps:
+                Please investigate this issue as a priority. You can start by reviewing the CloudWatch logs linked above. Additionally, ensure that any upstream or downstream services that rely on this Lambda function are not impacted by this error.
+                Support:
+                If you need further assistance, please feel free to reach out to the AWS DevOps team or consult the AWS documentation here"""
+                            )

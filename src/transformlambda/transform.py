@@ -29,6 +29,7 @@ import boto3
 from datetime import datetime
 from botocore.exceptions import ClientError
 import logging
+import os
 
 logger = logging.getLogger()
 logger.setLevel("INFO")
@@ -49,124 +50,143 @@ def get_time():
 
 def lambda_handler(event, context) -> None:
     """TRANSFORM"""
+    try:
+            current_time = get_time()
+            timestamp = current_time.strftime('%Y/%m/%d/%H-%M-%S')
 
-    current_time = get_time()
-    timestamp = current_time.strftime('%Y/%m/%d/%H-%M-%S')
+            logger.info("Transform Lambda beggining execution")
 
-    logger.info("Transform Lambda beggining execution")
+            logger.info("Retrieving arguments from previous Extract Lambda")
+            tables_with_filepaths = get_arguments(event)
+            tables_with_json_data = {}
 
-    logger.info("Retrieving arguments from previous Extract Lambda")
-    tables_with_filepaths = get_arguments(event)
-    tables_with_json_data = {}
+            table_list = list(tables_with_filepaths.keys())
+            logger.info(f"Tables to update: {table_list}")
 
-    table_list = list(tables_with_filepaths.keys())
-    logger.info(f"Tables to update: {table_list}")
+            logger.info("Retrieving json files from Extract S3 Bucket")
+            for table in table_list:
+                logger.info(f"Retrieving {tables_with_filepaths[table]}...")
+                tables_with_json_data[table] = get_data_from_ingestion_bucket(
+                    tables_with_filepaths[table]
+                    )
+                logger.info(f"{table} file retrieved")
 
-    logger.info("Retrieving json files from Extract S3 Bucket")
-    for table in table_list:
-        logger.info(f"Retrieving {tables_with_filepaths[table]}...")
-        tables_with_json_data[table] = get_data_from_ingestion_bucket(
-            tables_with_filepaths[table]
-            )
-        logger.info(f"{table} file retrieved")
+            tables_with_dataframes = {}
 
-    tables_with_dataframes = {}
+            logger.info(f"Converting tables from json to dataframe")
+            for table in table_list:
+                tables_with_dataframes[table] = json_to_panda_df(
+                    tables_with_json_data[table]
+                    )
+                logger.info(f"Table [{table}] converted")
 
-    logger.info(f"Converting tables from json to dataframe")
-    for table in table_list:
-        tables_with_dataframes[table] = json_to_panda_df(
-            tables_with_json_data[table]
-            )
-        logger.info(f"Table [{table}] converted")
+            processed_dataframes = {}
+            processed_dataframe_list = []
 
-    processed_dataframes = {}
-    processed_dataframe_list = []
+            if "sales_order" in table_list:
+                logger.info("Creating df_fact_sales_order")
+                df_fact_sales_order = create_df_fact_sales_order(
+                    tables_with_dataframes["sales_order"]
+                    )
+                processed_dataframes["fact_sales_order"] = df_fact_sales_order
 
-    if "sales_order" in table_list:
-        logger.info("Creating df_fact_sales_order")
-        df_fact_sales_order = create_df_fact_sales_order(
-            tables_with_dataframes["sales_order"]
-            )
-        processed_dataframes["fact_sales_order"] = df_fact_sales_order
+            if "staff" in table_list and "department" in table_list:
+                logger.info("Creating df_dim_staff")
+                df_dim_staff = create_df_dim_staff(
+                    tables_with_dataframes["staff"],
+                    tables_with_dataframes["department"]
+                    )
+                processed_dataframes["dim_staff"] = df_dim_staff
+            
+            if "address" in table_list:
+                logger.info("Creating df_dim_location")
+                df_dim_location = create_dim_location(
+                    df_fact_sales_order,
+                    tables_with_dataframes["address"]
+                    )
+                processed_dataframes["dim_location"] = df_dim_location
+            
+            if "sales_order" in table_list:
+                logger.info("Creating df_dim_date")
+                df_dim_date = create_df_dim_date(
+                    df_fact_sales_order
+                    )
+                processed_dataframes["dim_date"] = df_dim_date
 
-    if "staff" in table_list and "department" in table_list:
-        logger.info("Creating df_dim_staff")
-        df_dim_staff = create_df_dim_staff(
-            tables_with_dataframes["staff"],
-            tables_with_dataframes["department"]
-            )
-        processed_dataframes["dim_staff"] = df_dim_staff
-    
-    if "address" in table_list:
-        logger.info("Creating df_dim_location")
-        df_dim_location = create_dim_location(
-            df_fact_sales_order,
-            tables_with_dataframes["address"]
-            )
-        processed_dataframes["dim_location"] = df_dim_location
-    
-    if "sales_order" in table_list:
-        logger.info("Creating df_dim_date")
-        df_dim_date = create_df_dim_date(
-            df_fact_sales_order
-            )
-        processed_dataframes["dim_date"] = df_dim_date
+            if "currency" in table_list:
+                logger.info("Creating df_dim_currency")
+                df_dim_currency = create_df_dim_currency(
+                    tables_with_dataframes["currency"]
+                    )
+                processed_dataframes["dim_currency"] = df_dim_currency
+                
+            if "address" in table_list and "sales_order" in table_list:
+                logger.info("Creating df_dim_location")
+                df_dim_location = create_dim_location(
+                    df_fact_sales_order,
+                    tables_with_dataframes["address"]
+                    )
+                processed_dataframes["dim_location"] = df_dim_location
 
-    if "currency" in table_list:
-        logger.info("Creating df_dim_currency")
-        df_dim_currency = create_df_dim_currency(
-            tables_with_dataframes["currency"]
-            )
-        processed_dataframes["dim_currency"] = df_dim_currency
+            if "design" in table_list:
+                logger.info("Creating df_dim_design")
+                df_dim_design = create_df_dim_design(
+                    tables_with_dataframes["design"]
+                    )
+                processed_dataframes["dim_design"] = df_dim_design
+
+            if "counterparty" in table_list and "address" in table_list:
+                logger.info("Creating dim_counterparty_df")
+                df_dim_counterparty = create_df_dim_counterparty(
+                    tables_with_dataframes["counterparty"],
+                    tables_with_dataframes["address"]
+                )
+                processed_dataframes["dim_counterparty"] = df_dim_counterparty
+
+            processed_dataframe_list = list(processed_dataframes.keys())
+            dataframe_parquet_filepaths = {}
+
+            logger.info(f"Processed tables: {processed_dataframe_list}")
+
+            logger.info("Converting dataframes to parquet files")
+            for df in processed_dataframe_list:
+                logger.info(f"Converting {df}_df to parquet file")
+                dataframe_parquet_filepaths[df] = convert_dataframe_to_parquet_bytes(
+                    processed_dataframes[df]
+                    )
+
+            logger.info("Uploading parquet files to Processed S3 Bucket")
+            for df in processed_dataframe_list:
+                logger.info(f"Uploading {df}...")
+                upload_to_processed_bucket(
+                    dataframe_parquet_filepaths[df],
+                    f"{df}/{timestamp}.pq"
+                    )
+                logger.info("Upload complete!")
+
+            logger.info("Transform Lambda ended execution")
+
+            pq_with_filepaths = {}
+            for df in processed_dataframe_list:
+                pq_with_filepaths[df] = f"{df}/{timestamp}.pq"
+
+
+    except ClientError as e:
         
-    if "address" in table_list and "sales_order" in table_list:
-        logger.info("Creating df_dim_location")
-        df_dim_location = create_dim_location(
-            df_fact_sales_order,
-            tables_with_dataframes["address"]
-            )
-        processed_dataframes["dim_location"] = df_dim_location
-
-    if "design" in table_list:
-        logger.info("Creating df_dim_design")
-        df_dim_design = create_df_dim_design(
-            tables_with_dataframes["design"]
-            )
-        processed_dataframes["dim_design"] = df_dim_design
-
-    if "counterparty" in table_list and "address" in table_list:
-        logger.info("Creating dim_counterparty_df")
-        df_dim_counterparty = create_df_dim_counterparty(
-            tables_with_dataframes["counterparty"],
-            tables_with_dataframes["address"]
-        )
-        processed_dataframes["dim_counterparty"] = df_dim_counterparty
-
-    processed_dataframe_list = list(processed_dataframes.keys())
-    dataframe_parquet_filepaths = {}
-
-    logger.info(f"Processed tables: {processed_dataframe_list}")
-
-    logger.info("Converting dataframes to parquet files")
-    for df in processed_dataframe_list:
-        logger.info(f"Converting {df}_df to parquet file")
-        dataframe_parquet_filepaths[df] = convert_dataframe_to_parquet_bytes(
-            processed_dataframes[df]
-            )
-
-    logger.info("Uploading parquet files to Processed S3 Bucket")
-    for df in processed_dataframe_list:
-        logger.info(f"Uploading {df}...")
-        upload_to_processed_bucket(
-            dataframe_parquet_filepaths[df],
-            f"{df}/{timestamp}.pq"
-            )
-        logger.info("Upload complete!")
-
-    logger.info("Transform Lambda ended execution")
-
-    pq_with_filepaths = {}
-    for df in processed_dataframe_list:
-        pq_with_filepaths[df] = f"{df}/{timestamp}.pq"
-
-    return pq_with_filepaths
+        logger.error("Transform lambda failed to perform correctly")
+        topic_arn = os.environ.get('TOPIC_ARN')
+        client = boto3.client('sns')  
+        client.publish(
+            TopicArn = topic_arn,
+            Message = f"""Error Summary:
+                Function Name: Transform Lambda
+                Region: eu-west-2
+                Error Message: "Transform lambda failed to perform correctly"
+                Detailed Logs: {str(e)}
+                Next Steps:
+                Please investigate this issue as a priority. You can start by reviewing the CloudWatch logs linked above. Additionally, ensure that any upstream or downstream services that rely on this Lambda function are not impacted by this error.
+                Support:
+                If you need further assistance, please feel free to reach out to the AWS DevOps team or consult the AWS documentation here"""
+                            )
+    finally:
+        return pq_with_filepaths
