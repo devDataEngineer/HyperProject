@@ -18,7 +18,8 @@ def load_dim_currency_to_warehouse(dim_currency_df):
                 "currency_id",
                 "currency_code",
                 "currency_name") 
-                VALUES (%s, %s, %s)""",
+                VALUES (%s, %s, %s)
+                ON CONFLICT (currency_id) DO NOTHING;""",
                 (
                 row['currency_id'],
                 row['currency_code'],row['currency_name'], 
