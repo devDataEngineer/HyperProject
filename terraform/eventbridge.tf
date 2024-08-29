@@ -26,18 +26,3 @@ output "StateMachineArn" {
       value       = aws_sfn_state_machine.step_function_state_machine.arn
   description = "Step Function my-state-machine ARN"
 }
-# resource "aws_scheduler_schedule" "state_machine_schedule" {
-#   name       = "state-machine-schedule" # could be more in line with other names
-#   group_name = "default"
-
-#   flexible_time_window {
-#     mode = "OFF"
-#   }
-
-#   schedule_expression = "rate(5 minutes)"
-
-#   target {
-#     arn      = aws_sfn_state_machine.step_function_state_machine.arn
-#     role_arn = aws_iam_role.state_machine_role.arn
-#   }
-# }
