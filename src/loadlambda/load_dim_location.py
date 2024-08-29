@@ -9,7 +9,7 @@ import logging
 logger = logging.getLogger()
 logger.setLevel("INFO")
 
-def load_dim_location_to_warehouse(dim_location_df):
+def load_dim_location_to_warehouse(dim_location_df, table_name="dim_location"):
     conn = warehouse_connection()
     cur = conn.cursor()
     logger.info(f"Started processing {dim_location_df} DataFrame to warehouse")
