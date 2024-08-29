@@ -6,7 +6,7 @@ except:
     from src.extractlambda.connection import close_db_connection, db_connection
     from src.extractlambda.utilities import format_extract_lambda_as_rows
     from src.extractlambda.time_param_funcs import update_time_param
-
+from botocore.exceptions import ClientError
 from pg8000 import DatabaseError
 
 from datetime import datetime
@@ -123,14 +123,23 @@ def load_all_tables(
                     current_time = current_time
                     )
 
-    except:
-        logger.error("Extract lambda failed to pull from DB")
+    except ClientError as e:
+        
+        logger.error("Extract lambda failed to pull from DB and load the data to s3 bucket")
         topic_arn = os.environ.get('TOPIC_ARN')
         client = boto3.client('sns')  
         client.publish(
             TopicArn = topic_arn,
-            Message = "Extract lambda failed to pull from DB"
-            )
+            Message = f"""Error Summary:
+                Function Name: Extract Lambda
+                Region: eu-west-2
+                Error Message: Extract lambda failed to pull from DB and load the data to s3 bucket
+                Detailed Logs: {str(e)}
+                Next Steps:
+                Please investigate this issue as a priority. You can start by reviewing the CloudWatch logs linked above. Additionally, ensure that any upstream or downstream services that rely on this Lambda function are not impacted by this error.
+                Support:
+                If you need further assistance, please feel free to reach out to the AWS DevOps team or consult the AWS documentation here"""
+                            )
 
     finally:
         return tables_modified
@@ -155,3 +164,5 @@ def lambda_handler(event, context) -> dict:
 
     tables_modified = load_all_tables(current_time, previous_time)
     return tables_modified
+
+
