@@ -10,6 +10,8 @@ from pandas._libs.tslibs.parsing import DateParseError
 def test_df_dim_date_has_correct_cos():
     data = { 
         'created_date':[datetime.now()],
+        'agreed_payment_date':[datetime.now()],
+        'agreed_delivery_date':[datetime.now()],
         'name': "abcde"
     }
     df = pd.DataFrame(data)
@@ -22,6 +24,8 @@ def test_df_dim_date_has_correct_cos():
 def test_df_dim_date_has_correct_cols_type():
     data = { 
         'created_date':[datetime.now()],
+        'agreed_payment_date':[datetime.now()],
+        'agreed_delivery_date':[datetime.now()],
         'name': "abcde"
     }
     df = pd.DataFrame(data)
@@ -31,6 +35,9 @@ def test_df_dim_date_has_correct_cols_type():
 def test_df_dim_date_raise_error():
     data = { 
         'created_date':["string"],
+        'agreed_payment_date': ['string'],
+        'agreed_delivery_date':['string'],
+
         'name': "abcde"
     }
     df = pd.DataFrame(data)
