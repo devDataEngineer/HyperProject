@@ -1,4 +1,8 @@
-from src.loadlambda.load_warehouse_connection import warehouse_connection
+try:
+    from src.loadlambda.load_warehouse_connection import warehouse_connection
+except:
+    from src.loadlambda.load_warehouse_connection import warehouse_connection
+
 import logging
 
 logger = logging.getLogger()
