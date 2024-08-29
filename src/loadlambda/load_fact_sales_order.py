@@ -6,15 +6,15 @@ logger.setLevel("INFO")
 
 
 # from src.loadlambda.load_warehouse_connection  import warehouse_connection as conn
-def load_fact_sales_to_warehouse(fact_df, table_name="fact_sales_order"):
+def load_fact_sales_to_warehouse(fact_df):
     conn = warehouse_connection()
     cursor = conn.cursor()
-    logger.info(f"Started processing {fact_df} DataFrame to warehouse")
+    logger.info(f"Started processing fact_df DataFrame to warehouse")
 
     try:
         for _, row in fact_df.iterrows():
             cursor.execute(
-                f"""INSERT INTO {table_name} (
+                """INSERT INTO fact_sales_order (
                 "sales_record_id",
                 "sales_order_id",
                 "created_date",
@@ -30,8 +30,8 @@ def load_fact_sales_to_warehouse(fact_df, table_name="fact_sales_order"):
                 "agreed_payment_date",
                 "agreed_delivery_date",
                 "agreed_delivery_location_id") 
-                        VALUES (%s, %s, %s, %s, %s,%s, %s, %s, %s, %s,%s, %s, %s, %s, %s)""",
-                (
+                VALUES (%s, %s, %s, %s, %s,%s, %s, %s, %s, %s,%s, %s, %s, %s, %s)""",
+            (
                 row['sales_record_id'],row['sales_order_id'],row['created_date'],row['created_time'], 
                 row['last_updated_date'], row['last_updated_time'],row['sales_staff_id'],row['counterparty_id'],
                     row['units_sold'],row['unit_price'],row['currency_id'],row['design_id'],

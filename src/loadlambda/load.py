@@ -3,13 +3,20 @@ try:
     from src.loadlambda.load_dim_date import load_dim_date_to_warehouse
     from src.loadlambda.load_dim_design import load_dim_design_to_warehouse
     from src.loadlambda.load_dim_location import load_dim_location_to_warehouse
-    from src.loadlambda.load_fact_to_warehouse import load_fact_to_warehouse
+    from src.loadlambda.load_fact_sales_order import load_fact_sales_to_warehouse
+    from src.loadlambda.load_dim_staff import load_dim_staff_to_warehouse
+    from src.loadlambda.load_dim_currency import load_dim_currency_to_warehouse
+    from src.loadlambda.load_dim_counterparty import load_dim_counterparty_to_warehouse
 except:
     from get_pq_from_bucket import get_pq_from_bucket
     from load_dim_date import load_dim_date_to_warehouse
     from load_dim_design import load_dim_design_to_warehouse
     from load_dim_location import load_dim_location_to_warehouse
-    from load_fact_to_warehouse import load_fact_to_warehouse
+    from load_fact_sales_order import load_fact_sales_to_warehouse
+    from load_dim_staff import load_dim_staff_to_warehouse
+    from load_dim_currency import load_dim_currency_to_warehouse
+    from load_dim_counterparty import load_dim_counterparty_to_warehouse
+    
 
 import logging
 
@@ -62,13 +69,17 @@ def lambda_handler(event, context):
                 load_dim_design_to_warehouse(tables_with_df[table])
             case "dim_location":
                 load_dim_location_to_warehouse(tables_with_df[table])
-            case _:
-                pass
+            case "dim_staff":
+                load_dim_staff_to_warehouse(tables_with_df[table])
+            case "dim_currency":
+                load_dim_currency_to_warehouse(tables_with_df[table])
+            case "dim_counterparty":
+                load_dim_counterparty_to_warehouse(tables_with_df[table])
         logger.info(f"Upload of {table} complete!")
 
     if "fact_sales_order" in table_list:
         logger.info("Uploading fact_sales_order...")
-        load_fact_to_warehouse(tables_with_df["fact_sales_order"])
+        load_fact_sales_to_warehouse(tables_with_df["fact_sales_order"])
         logger.info(f"Upload of fact_sales_order complete!")
 
         logger.info("End of Load lambda execution")

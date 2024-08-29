@@ -9,10 +9,10 @@ import logging
 logger = logging.getLogger()
 logger.setLevel("INFO")
 
-def load_dim_design_to_warehouse(dim_design_df, table_name= "dim_design"):
+def load_dim_design_to_warehouse(dim_design_df):
     conn = warehouse_connection()
     cur = conn.cursor()
-    logger.info(f"Started processing {dim_design_df} DataFrame to warehouse")
+    logger.info(f"Started processing dim_design_df DataFrame to warehouse")
     try:
         for _, row in dim_design_df.iterrows():
             cur.execute(
