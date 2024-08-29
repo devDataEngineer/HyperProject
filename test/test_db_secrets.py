@@ -20,7 +20,12 @@ def aws_client(aws_credentials):
         yield boto3.client('secretsmanager')
 
 def test_get_secret_returns_correct_secret(aws_client):
-    result = get_secret()
+    mock_secret_name = 'mock_secret'
+    mock_username = 'mock_user'
+    mock_password = 'mock_password'
+    aws_client.create_secret(Name=mock_secret_name, SecretString=json.dumps({'mock_secret':mock_secret_name, 'username':mock_username, 'password':mock_password}))
+
+    result = get_secret(name_secret=mock_secret_name)
     assert isinstance(result, dict)
     # assert result['engine'] == 'postgres'
 
