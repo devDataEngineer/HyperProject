@@ -24,9 +24,9 @@ def load_dim_date_to_warehouse(dim_date_df, table_name="dim_date"):
                     day_of_week,
                     day_name,
                     month_name,
-                    quarter") 
+                    quarter) 
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                    ON CONFLICT (date_id) DO NOTHING;""",
+                    ON CONFLICT ("date_id") DO NOTHING;""",
                 (
                 row['date_id'],row['year'],row['month'],row['day'], 
                 row['day_of_week'], row['day_name'],row['month_name'],row['quarter'])
