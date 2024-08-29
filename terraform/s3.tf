@@ -26,19 +26,3 @@ resource "aws_s3_bucket" "lambda-code-bucket" {
   }
 }
 
-# Commented out after confirming with Cris, because this was another trigger 
-# for the Extract Lambda
-
-# resource "aws_s3_bucket_notification" "ingestion-bucket-notification" {
-#   bucket = aws_s3_bucket.ingestion-bucket.id
-#   eventbridge = true
-
-#   lambda_function {
-      
-#     lambda_function_arn = aws_lambda_function.extract_lambda.arn # change to transform
-#     events              = ["s3:ObjectCreated:*"]
-#   }
-
-#   depends_on = [aws_lambda_permission.allow_bucket]
-#  }  
-
